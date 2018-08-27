@@ -1,0 +1,409 @@
+
+OPENCL ACTIVATED
+NOTE: This GSX library has the time limitation by reason of an evaluation module.
+Platform: PowerVR Rogue
+Vendor: Imagination Technologies
+Version: OpenCL 1.2 
+	-------------------------
+		Name: PowerVR Rogue GX6650
+		Version: OpenCL C 1.2 
+		Max. Compute Units: 6
+		Local Memory Size: 3 KB
+		Global Memory Size: 512 MB
+		Max Alloc Size: 256 MB
+		Max Work-group Total Size: 512
+		Max Work-group Dims: ( 512 512 512 )
+	-------------------------
+create command_queue
+create Program
+clBuildProgram
+INFO: complete to make CL properties
+layer     filters    size              input                output
+    0 conv     16  3 x 3 / 1   416 x 416 x   3   ->   416 x 416 x  16
+    1 max          2 x 2 / 2   416 x 416 x  16   ->   208 x 208 x  16
+    2 conv     32  3 x 3 / 1   208 x 208 x  16   ->   208 x 208 x  32
+    3 max          2 x 2 / 2   208 x 208 x  32   ->   104 x 104 x  32
+    4 conv     64  3 x 3 / 1   104 x 104 x  32   ->   104 x 104 x  64
+    5 max          2 x 2 / 2   104 x 104 x  64   ->    52 x  52 x  64
+    6 conv    128  3 x 3 / 1    52 x  52 x  64   ->    52 x  52 x 128
+    7 max          2 x 2 / 2    52 x  52 x 128   ->    26 x  26 x 128
+    8 conv    256  3 x 3 / 1    26 x  26 x 128   ->    26 x  26 x 256
+    9 max          2 x 2 / 2    26 x  26 x 256   ->    13 x  13 x 256
+   10 conv    512  3 x 3 / 1    13 x  13 x 256   ->    13 x  13 x 512
+   11 max          2 x 2 / 1    13 x  13 x 512   ->    13 x  13 x 512
+   12 conv   1024  3 x 3 / 1    13 x  13 x 512   ->    13 x  13 x1024
+   13 conv    512  3 x 3 / 1    13 x  13 x1024   ->    13 x  13 x 512
+   14 conv    425  1 x 1 / 1    13 x  13 x 512   ->    13 x  13 x 425
+   15 detection
+mask_scale: Using default '1.000000'
+workspace_size: 24920064
+sizeof(float): 4
+Loading weights from tiny-yolo.weights...Done!
+running test detector
+	layer_0 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 18690048
+layer 0: Predicted in 0.010918 seconds.
+
+	layer_1 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 1: Predicted in 0.007613 seconds.
+
+	layer_2 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 24920064
+layer 2: Predicted in 0.016835 seconds.
+
+	layer_3 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 3: Predicted in 0.004116 seconds.
+
+	layer_4 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 12460032
+layer 4: Predicted in 0.016106 seconds.
+
+	layer_5 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 5: Predicted in 0.002182 seconds.
+
+	layer_6 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 6230016
+layer 6: Predicted in 0.015391 seconds.
+
+	layer_7 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 7: Predicted in 0.001256 seconds.
+
+	layer_8 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 3115008
+layer 8: Predicted in 0.013415 seconds.
+
+	layer_9 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 9: Predicted in 0.000644 seconds.
+
+	layer_10 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 1557504
+layer 10: Predicted in 0.014382 seconds.
+
+	layer_11 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 11: Predicted in 0.000377 seconds.
+
+	layer_12 : <forward_convolutional_layer_opencl>
+alloc done
+gws!! 13 13 1024
+move time : 0.000530
+l.workspace_size: 3115008
+layer 12: Predicted in 0.063092 seconds.
+
+	layer_13 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 6230016
+layer 13: Predicted in 0.064938 seconds.
+
+output[0] : -0.036774
+	layer_14 : <forward_convolutional_layer>
+l.n: 425, l.c: 512, l.groups: 1, l.size: 1, l.w: 13, l.h: 13
+m:425, k:512, n:169,Total:36774400
+batchnorm time : 0.000160 sec
+activate time : 0.000489 sec
+l.workspace_size: 346112
+layer 14: Predicted in 0.044024 seconds.
+
+	layer_15 : <forward_region_layer>
+l.workspace_size: 0
+layer 15: Predicted in 0.005277 seconds.
+
+GPU time 0.231264 seconds.
+
+CPU time 0.049301 seconds.
+
+data/person.jpg: Predicted in 0.315166 seconds.
+dog: 92%
+person: 91%
+horse: 92%
+root@h3ulcb:~/darknet_pearl# ./run.sh
+OPENCL ACTIVATED
+NOTE: This GSX library has the time limitation by reason of an evaluation module.
+Platform: PowerVR Rogue
+Vendor: Imagination Technologies
+Version: OpenCL 1.2 
+	-------------------------
+		Name: PowerVR Rogue GX6650
+		Version: OpenCL C 1.2 
+		Max. Compute Units: 6
+		Local Memory Size: 3 KB
+		Global Memory Size: 512 MB
+		Max Alloc Size: 256 MB
+		Max Work-group Total Size: 512
+		Max Work-group Dims: ( 512 512 512 )
+	-------------------------
+create command_queue
+create Program
+clBuildProgram
+INFO: complete to make CL properties
+layer     filters    size              input                output
+    0 conv     16  3 x 3 / 1   416 x 416 x   3   ->   416 x 416 x  16
+    1 max          2 x 2 / 2   416 x 416 x  16   ->   208 x 208 x  16
+    2 conv     32  3 x 3 / 1   208 x 208 x  16   ->   208 x 208 x  32
+    3 max          2 x 2 / 2   208 x 208 x  32   ->   104 x 104 x  32
+    4 conv     64  3 x 3 / 1   104 x 104 x  32   ->   104 x 104 x  64
+    5 max          2 x 2 / 2   104 x 104 x  64   ->    52 x  52 x  64
+    6 conv    128  3 x 3 / 1    52 x  52 x  64   ->    52 x  52 x 128
+    7 max          2 x 2 / 2    52 x  52 x 128   ->    26 x  26 x 128
+    8 conv    256  3 x 3 / 1    26 x  26 x 128   ->    26 x  26 x 256
+    9 max          2 x 2 / 2    26 x  26 x 256   ->    13 x  13 x 256
+   10 conv    512  3 x 3 / 1    13 x  13 x 256   ->    13 x  13 x 512
+   11 max          2 x 2 / 1    13 x  13 x 512   ->    13 x  13 x 512
+   12 conv   1024  3 x 3 / 1    13 x  13 x 512   ->    13 x  13 x1024
+   13 conv    512  3 x 3 / 1    13 x  13 x1024   ->    13 x  13 x 512
+   14 conv    425  1 x 1 / 1    13 x  13 x 512   ->    13 x  13 x 425
+   15 detection
+mask_scale: Using default '1.000000'
+workspace_size: 24920064
+sizeof(float): 4
+Loading weights from tiny-yolo.weights...Done!
+running test detector
+	layer_0 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 18690048
+layer 0: Predicted in 0.010655 seconds.
+
+	layer_1 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 1: Predicted in 0.007533 seconds.
+
+	layer_2 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 24920064
+layer 2: Predicted in 0.016678 seconds.
+
+	layer_3 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 3: Predicted in 0.004011 seconds.
+
+	layer_4 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 12460032
+layer 4: Predicted in 0.015596 seconds.
+
+	layer_5 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 5: Predicted in 0.002102 seconds.
+
+	layer_6 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 6230016
+layer 6: Predicted in 0.014642 seconds.
+
+	layer_7 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 7: Predicted in 0.001149 seconds.
+
+	layer_8 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 3115008
+layer 8: Predicted in 0.014377 seconds.
+
+	layer_9 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 9: Predicted in 0.000643 seconds.
+
+	layer_10 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 1557504
+layer 10: Predicted in 0.014850 seconds.
+
+	layer_11 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 11: Predicted in 0.000373 seconds.
+
+	layer_12 : <forward_convolutional_layer_opencl>
+alloc done
+gws!! 13 13 1024
+move time : 0.000434
+l.workspace_size: 3115008
+layer 12: Predicted in 0.063185 seconds.
+
+	layer_13 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 6230016
+layer 13: Predicted in 0.062105 seconds.
+
+output[0] : -0.036774
+	layer_14 : <forward_convolutional_layer>
+l.n: 425, l.c: 512, l.groups: 1, l.size: 1, l.w: 13, l.h: 13
+m:425, k:512, n:169,Total:36774400
+batchnorm time : 0.000178 sec
+activate time : 0.000482 sec
+l.workspace_size: 346112
+layer 14: Predicted in 0.033886 seconds.
+
+	layer_15 : <forward_region_layer>
+l.workspace_size: 0
+layer 15: Predicted in 0.004320 seconds.
+
+GPU time 0.227898 seconds.
+
+CPU time 0.038206 seconds.
+
+data/person.jpg: Predicted in 0.300308 seconds.
+dog: 92%
+person: 91%
+horse: 92%
+root@h3ulcb:~/darknet_pearl# ./run.sh
+OPENCL ACTIVATED
+NOTE: This GSX library has the time limitation by reason of an evaluation module.
+Platform: PowerVR Rogue
+Vendor: Imagination Technologies
+Version: OpenCL 1.2 
+	-------------------------
+		Name: PowerVR Rogue GX6650
+		Version: OpenCL C 1.2 
+		Max. Compute Units: 6
+		Local Memory Size: 3 KB
+		Global Memory Size: 512 MB
+		Max Alloc Size: 256 MB
+		Max Work-group Total Size: 512
+		Max Work-group Dims: ( 512 512 512 )
+	-------------------------
+create command_queue
+create Program
+clBuildProgram
+INFO: complete to make CL properties
+layer     filters    size              input                output
+    0 conv     16  3 x 3 / 1   416 x 416 x   3   ->   416 x 416 x  16
+    1 max          2 x 2 / 2   416 x 416 x  16   ->   208 x 208 x  16
+    2 conv     32  3 x 3 / 1   208 x 208 x  16   ->   208 x 208 x  32
+    3 max          2 x 2 / 2   208 x 208 x  32   ->   104 x 104 x  32
+    4 conv     64  3 x 3 / 1   104 x 104 x  32   ->   104 x 104 x  64
+    5 max          2 x 2 / 2   104 x 104 x  64   ->    52 x  52 x  64
+    6 conv    128  3 x 3 / 1    52 x  52 x  64   ->    52 x  52 x 128
+    7 max          2 x 2 / 2    52 x  52 x 128   ->    26 x  26 x 128
+    8 conv    256  3 x 3 / 1    26 x  26 x 128   ->    26 x  26 x 256
+    9 max          2 x 2 / 2    26 x  26 x 256   ->    13 x  13 x 256
+   10 conv    512  3 x 3 / 1    13 x  13 x 256   ->    13 x  13 x 512
+   11 max          2 x 2 / 1    13 x  13 x 512   ->    13 x  13 x 512
+   12 conv   1024  3 x 3 / 1    13 x  13 x 512   ->    13 x  13 x1024
+   13 conv    512  3 x 3 / 1    13 x  13 x1024   ->    13 x  13 x 512
+   14 conv    425  1 x 1 / 1    13 x  13 x 512   ->    13 x  13 x 425
+   15 detection
+mask_scale: Using default '1.000000'
+workspace_size: 24920064
+sizeof(float): 4
+Loading weights from tiny-yolo.weights...Done!
+running test detector
+	layer_0 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 18690048
+layer 0: Predicted in 0.010838 seconds.
+
+	layer_1 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 1: Predicted in 0.007781 seconds.
+
+	layer_2 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 24920064
+layer 2: Predicted in 0.017245 seconds.
+
+	layer_3 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 3: Predicted in 0.004114 seconds.
+
+	layer_4 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 12460032
+layer 4: Predicted in 0.016098 seconds.
+
+	layer_5 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 5: Predicted in 0.002231 seconds.
+
+	layer_6 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 6230016
+layer 6: Predicted in 0.015347 seconds.
+
+	layer_7 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 7: Predicted in 0.001271 seconds.
+
+	layer_8 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 3115008
+layer 8: Predicted in 0.013423 seconds.
+
+	layer_9 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 9: Predicted in 0.000645 seconds.
+
+	layer_10 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 1557504
+layer 10: Predicted in 0.014760 seconds.
+
+	layer_11 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 11: Predicted in 0.000376 seconds.
+
+	layer_12 : <forward_convolutional_layer_opencl>
+alloc done
+gws!! 13 13 1024
+move time : 0.000423
+l.workspace_size: 3115008
+layer 12: Predicted in 0.063477 seconds.
+
+	layer_13 : <forward_convolutional_layer_opencl>
+alloc done
+move time : 0.000000
+l.workspace_size: 6230016
+layer 13: Predicted in 0.062259 seconds.
+
+output[0] : -0.036774
+	layer_14 : <forward_convolutional_layer>
+l.n: 425, l.c: 512, l.groups: 1, l.size: 1, l.w: 13, l.h: 13
+m:425, k:512, n:169,Total:36774400
+batchnorm time : 0.000177 sec
+activate time : 0.000483 sec
+l.workspace_size: 346112
+layer 14: Predicted in 0.033896 seconds.
+
+	layer_15 : <forward_region_layer>
+l.workspace_size: 0
+layer 15: Predicted in 0.004998 seconds.
+
+GPU time 0.229864 seconds.
+
+CPU time 0.038894 seconds.
+
+data/person.jpg: Predicted in 0.303738 seconds.
+dog: 92%
+person: 91%
+horse: 92%
+root@h3ulcb:~/darknet_pearl# 

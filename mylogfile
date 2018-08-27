@@ -1,0 +1,149 @@
+./run.sh 
+OPENCL ACTIVATED
+NOTE: This GSX library has the time limitation by reason of an evaluation module.
+INFO: complete to make CL properties
+layer     filters    size              input                output
+    0 conv     16  3 x 3 / 1   416 x 416 x   3   ->   416 x 416 x  16
+    1 max          2 x 2 / 2   416 x 416 x  16   ->   208 x 208 x  16
+    2 conv     32  3 x 3 / 1   208 x 208 x  16   ->   208 x 208 x  32
+    3 max          2 x 2 / 2   208 x 208 x  32   ->   104 x 104 x  32
+    4 conv     64  3 x 3 / 1   104 x 104 x  32   ->   104 x 104 x  64
+    5 max          2 x 2 / 2   104 x 104 x  64   ->    52 x  52 x  64
+    6 conv    128  3 x 3 / 1    52 x  52 x  64   ->    52 x  52 x 128
+    7 max          2 x 2 / 2    52 x  52 x 128   ->    26 x  26 x 128
+    8 conv    256  3 x 3 / 1    26 x  26 x 128   ->    26 x  26 x 256
+    9 max          2 x 2 / 2    26 x  26 x 256   ->    13 x  13 x 256
+   10 conv    512  3 x 3 / 1    13 x  13 x 256   ->    13 x  13 x 512
+   11 max          2 x 2 / 1    13 x  13 x 512   ->    13 x  13 x 512
+   12 conv   1024  3 x 3 / 1    13 x  13 x 512   ->    13 x  13 x1024
+   13 conv    512  3 x 3 / 1    13 x  13 x1024   ->    13 x  13 x 512
+   14 conv    425  1 x 1 / 1    13 x  13 x 512   ->    13 x  13 x 425
+   15 detection
+mask_scale: Using default '1.000000'
+workspace_size: 24920064
+sizeof(float): 4
+Loading weights from tiny-yolo.weights...Done!
+	layer_0 : <forward_convolutional_layer>
+gws : 416 416 16
+m : 16, k : 27
+copy to device time : 0.002795 sec
+execution time : 0.046690 sec
+copy from gpu time : 0.032427 sec
+conv ocl time : 0.081948 sec
+l.workspace_size: 18690048
+layer 0: Predicted in 0.082006 seconds.
+
+	layer_1 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 1: Predicted in 0.047530 seconds.
+
+	layer_2 : <forward_convolutional_layer>
+gws : 208 208 32
+m : 32, k : 144
+copy to device time : 0.003114 sec
+execution time : 0.109153 sec
+copy from gpu time : 0.017245 sec
+conv ocl time : 0.129544 sec
+l.workspace_size: 24920064
+layer 2: Predicted in 0.129580 seconds.
+
+	layer_3 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 3: Predicted in 0.024179 seconds.
+
+	layer_4 : <forward_convolutional_layer>
+gws : 104 104 64
+m : 64, k : 288
+copy to device time : 0.002088 sec
+execution time : 0.104963 sec
+copy from gpu time : 0.008225 sec
+conv ocl time : 0.115303 sec
+l.workspace_size: 12460032
+layer 4: Predicted in 0.115340 seconds.
+
+	layer_5 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 5: Predicted in 0.017015 seconds.
+
+	layer_6 : <forward_convolutional_layer>
+gws : 52 52 128
+m : 128, k : 576
+copy to device time : 0.001794 sec
+execution time : 0.102727 sec
+copy from gpu time : 0.004610 sec
+conv ocl time : 0.109154 sec
+l.workspace_size: 6230016
+layer 6: Predicted in 0.109184 seconds.
+
+	layer_7 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 7: Predicted in 0.008126 seconds.
+
+	layer_8 : <forward_convolutional_layer>
+gws : 26 26 256
+m : 256, k : 1152
+copy to device time : 0.002273 sec
+execution time : 0.089608 sec
+copy from gpu time : 0.002425 sec
+conv ocl time : 0.094326 sec
+l.workspace_size: 3115008
+layer 8: Predicted in 0.094349 seconds.
+
+	layer_9 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 9: Predicted in 0.001627 seconds.
+
+	layer_10 : <forward_convolutional_layer>
+gws : 13 13 512
+m : 512, k : 2304
+copy to device time : 0.004303 sec
+execution time : 0.079127 sec
+copy from gpu time : 0.001332 sec
+conv ocl time : 0.084777 sec
+l.workspace_size: 1557504
+layer 10: Predicted in 0.084800 seconds.
+
+	layer_11 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 11: Predicted in 0.003184 seconds.
+
+	layer_12 : <forward_convolutional_layer>
+gws : 13 13 512
+m : 1024, k : 4608
+copy to device time : 0.016302 sec
+execution time : 0.314973 sec
+copy from gpu time : 0.002331 sec
+conv ocl time : 0.333626 sec
+l.workspace_size: 3115008
+layer 12: Predicted in 0.333651 seconds.
+
+	layer_13 : <forward_convolutional_layer>
+gws : 13 13 512
+m : 512, k : 9216
+copy to device time : 0.016797 sec
+execution time : 0.313331 sec
+copy from gpu time : 0.001215 sec
+conv ocl time : 0.331357 sec
+l.workspace_size: 6230016
+layer 13: Predicted in 0.331381 seconds.
+
+	layer_14 : <forward_convolutional_layer>
+l.n: 425, l.c: 512, l.groups: 1, l.size: 1, l.w: 13, l.h: 13
+m:425, k:512, n:169,Total:36774400
+no normalization...
+batchnorm time : 0.000172 sec
+activate time : 0.000499 sec
+l.workspace_size: 346112
+layer 14: Predicted in 0.034864 seconds.
+
+	layer_15 : <forward_region_layer>
+l.workspace_size: 0
+layer 15: Predicted in 0.004308 seconds.
+
+GPU time 1.280289 seconds.
+
+data/person.jpg: Predicted in 1.446921 seconds.
+dog: 92%
+person: 91%
+horse: 92%
+root@h3ulcb:~/darknet_pearl# 

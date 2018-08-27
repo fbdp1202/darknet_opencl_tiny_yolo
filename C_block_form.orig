@@ -1,0 +1,112 @@
+//-------------------------------------------------------------
+//
+//  PROGRAM: Blocked Matrix Multipliplication kernel
+//
+//  PURPOSE: Computes an element of the proudct matrix
+//
+//              C = A * B
+//
+//           Using the well known blocked algorithm.  
+//
+//           To derive this algorithm, start with the naive
+//           triply nested loop algorithm with a dot product 
+//           for each element of C.  Decompose each loop 
+//           into blocks of size blcksz.  This gives you 6
+//           nested loops with three loops over blocks
+//           and three loops over indices inside the blocks.
+// 
+//           Rearrange the loops to put the 3 loops over blocks 
+//           at the outermost loops of the loop nest.  You'll
+//           see that the three "inner" loops are just the 
+//           regular matrix product between blocks.
+//
+//           The algorithms is simple.  Keeping all the indices
+//           straight is not.  We will use the following 
+//           conventions:
+//
+//             m,n,k            ... indices of full, global matrices 
+//             Mblk, Nblk, Kblk ... indices of matrix blocks
+//             mloc, nloc, kloc ... indices inside blocks
+//                 
+//  HISTORY: Written by Tim Mattson, November 2013 
+//           Updated by Simon McIntosh-Smith, August 2014 
+//
+//  LICENSE: This work is licensed under the Creative Commons
+//           Attribution 4.0 International License.
+//           To view a copy of this license, visit
+//           http://creativecommons.org/licenses/by/4.0/
+//           or send a letter to:
+//              Creative Commons,
+//              444 Castro Street, Suite 900,
+//              Mountain View, California, 94041, USA.
+//
+//-------------------------------------------------------------
+
+// It turns out that the compiler generates much better code if
+// we "hardwire" this block size.  16 works well for an NVIDIA 
+// GPU, 32 works well for a CPU
+#define Kleng 144
+#define blksz 16
+
+__kernel void mmul(
+                __global const float* restrict A,
+                __global const float* restrict B,
+                __global       float* restrict C,
+                __local        float* restrict Awrk,
+                __local        float* restrict Bwrk)
+{
+    int kloc, Kblk;
+    float Ctmp=0.0f;
+
+    //  This work-item will compute element C(m,n)
+    const int m = get_global_id(0);
+    const int n = get_global_id(1);
+
+    // Element C(m,n) is in block C(Mblk,Nblk)
+    const int Mblk = get_group_id(0);
+    const int Nblk = get_group_id(1);
+
+    // C(m,n) is element C(mloc, nloc) of block C(Mblk, Nblk)
+    const int mloc = get_local_id(0);
+    const int nloc = get_local_id(1);
+
+    // The number of blocks are the same in each dimension
+    const int Num_BLK = N/blksz;
+
+    // Setup the upper-left-corner (base address) for the A and
+    // B blocks plus the increments to advance base addresses as
+    // we loop over blocks
+          int Abase = Nblk*N*blksz;    
+    const int Ainc  = blksz;
+
+          int Bbase = Mblk*blksz;
+    const int Binc  = blksz*N;
+
+
+    // C(Mblk,Nblk) = (sum over Kblk) A(Mblk,Kblk)*B(Kblk,Nblk)
+    for (Kblk = 0;  Kblk<Num_BLK;  Kblk++)
+    {
+       // Load A(Mblk,Kblk) and B(Kblk,Nblk) into local memory.
+       // Each work-item loads a single element of the two blocks
+       // which are shared with the entire work-group.
+
+       Awrk[nloc*blksz+mloc] = A[Abase+nloc*N+mloc];
+       Bwrk[nloc*blksz+mloc] = B[Bbase+nloc*N+mloc];
+
+       barrier(CLK_LOCAL_MEM_FENCE);
+
+       // Compute dot products over local blocks to find
+       // the contribution to C(m,n) from this block
+       #pragma unroll
+       for (kloc=0; kloc<blksz; kloc++)
+          Ctmp += Awrk[nloc*blksz+kloc] * Bwrk[kloc*blksz+mloc];
+
+       barrier(CLK_LOCAL_MEM_FENCE);
+       Abase += Ainc;
+       Bbase += Binc;
+    }
+ 
+    // update global C matrix 
+    C[n*N+m] = Ctmp;
+
+}

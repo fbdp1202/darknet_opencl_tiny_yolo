@@ -1,0 +1,322 @@
+./run.sh
+OPENCL ACTIVATED
+NOTE: This GSX library has the time limitation by reason of an evaluation module.
+INFO: complete to make CL properties
+layer     filters    size              input                output
+    0 conv     16  3 x 3 / 1   416 x 416 x   3   ->   416 x 416 x  16
+    1 max          2 x 2 / 2   416 x 416 x  16   ->   208 x 208 x  16
+    2 conv     32  3 x 3 / 1   208 x 208 x  16   ->   208 x 208 x  32
+    3 max          2 x 2 / 2   208 x 208 x  32   ->   104 x 104 x  32
+    4 conv     64  3 x 3 / 1   104 x 104 x  32   ->   104 x 104 x  64
+    5 max          2 x 2 / 2   104 x 104 x  64   ->    52 x  52 x  64
+    6 conv    128  3 x 3 / 1    52 x  52 x  64   ->    52 x  52 x 128
+    7 max          2 x 2 / 2    52 x  52 x 128   ->    26 x  26 x 128
+    8 conv    256  3 x 3 / 1    26 x  26 x 128   ->    26 x  26 x 256
+    9 max          2 x 2 / 2    26 x  26 x 256   ->    13 x  13 x 256
+   10 conv    512  3 x 3 / 1    13 x  13 x 256   ->    13 x  13 x 512
+   11 max          2 x 2 / 1    13 x  13 x 512   ->    13 x  13 x 512
+   12 conv   1024  3 x 3 / 1    13 x  13 x 512   ->    13 x  13 x1024
+   13 conv    512  3 x 3 / 1    13 x  13 x1024   ->    13 x  13 x 512
+   14 conv    425  1 x 1 / 1    13 x  13 x 512   ->    13 x  13 x 425
+   15 detection
+mask_scale: Using default '1.000000'
+workspace_size: 24920064
+sizeof(float): 4
+Loading weights from tiny-yolo.weights...Done!
+	layer_0 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 18690048
+layer 0: Predicted in 0.009701 seconds.
+
+	layer_1 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 1: Predicted in 0.007411 seconds.
+
+	layer_2 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 24920064
+layer 2: Predicted in 0.016876 seconds.
+
+	layer_3 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 3: Predicted in 0.003981 seconds.
+
+	layer_4 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 12460032
+layer 4: Predicted in 0.015962 seconds.
+
+	layer_5 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 5: Predicted in 0.002109 seconds.
+
+	layer_6 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 6230016
+layer 6: Predicted in 0.015386 seconds.
+
+	layer_7 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 7: Predicted in 0.001198 seconds.
+
+	layer_8 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 3115008
+layer 8: Predicted in 0.015079 seconds.
+
+	layer_9 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 9: Predicted in 0.000726 seconds.
+
+	layer_10 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 1557504
+layer 10: Predicted in 0.016561 seconds.
+
+	layer_11 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 11: Predicted in 0.000438 seconds.
+
+	layer_12 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 3115008
+layer 12: Predicted in 0.062741 seconds.
+
+	layer_13 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 6230016
+layer 13: Predicted in 0.065199 seconds.
+
+	layer_14 : <forward_convolutional_layer>
+l.n: 425, l.c: 512, l.groups: 1, l.size: 1, l.w: 13, l.h: 13
+m:425, k:512, n:169,Total:36774400
+batchnorm time : 0.000175 sec
+activate time : 0.000495 sec
+l.workspace_size: 346112
+layer 14: Predicted in 0.033906 seconds.
+
+	layer_15 : <forward_region_layer>
+l.workspace_size: 0
+layer 15: Predicted in 0.004293 seconds.
+
+GPU time 0.217504 seconds.
+
+data/person.jpg: Predicted in 0.300218 seconds.
+dog: 92%
+person: 91%
+horse: 92%
+root@h3ulcb:~/darknet_pearl# ./run.sh
+OPENCL ACTIVATED
+NOTE: This GSX library has the time limitation by reason of an evaluation module.
+INFO: complete to make CL properties
+layer     filters    size              input                output
+    0 conv     16  3 x 3 / 1   416 x 416 x   3   ->   416 x 416 x  16
+    1 max          2 x 2 / 2   416 x 416 x  16   ->   208 x 208 x  16
+    2 conv     32  3 x 3 / 1   208 x 208 x  16   ->   208 x 208 x  32
+    3 max          2 x 2 / 2   208 x 208 x  32   ->   104 x 104 x  32
+    4 conv     64  3 x 3 / 1   104 x 104 x  32   ->   104 x 104 x  64
+    5 max          2 x 2 / 2   104 x 104 x  64   ->    52 x  52 x  64
+    6 conv    128  3 x 3 / 1    52 x  52 x  64   ->    52 x  52 x 128
+    7 max          2 x 2 / 2    52 x  52 x 128   ->    26 x  26 x 128
+    8 conv    256  3 x 3 / 1    26 x  26 x 128   ->    26 x  26 x 256
+    9 max          2 x 2 / 2    26 x  26 x 256   ->    13 x  13 x 256
+   10 conv    512  3 x 3 / 1    13 x  13 x 256   ->    13 x  13 x 512
+   11 max          2 x 2 / 1    13 x  13 x 512   ->    13 x  13 x 512
+   12 conv   1024  3 x 3 / 1    13 x  13 x 512   ->    13 x  13 x1024
+   13 conv    512  3 x 3 / 1    13 x  13 x1024   ->    13 x  13 x 512
+   14 conv    425  1 x 1 / 1    13 x  13 x 512   ->    13 x  13 x 425
+   15 detection
+mask_scale: Using default '1.000000'
+workspace_size: 24920064
+sizeof(float): 4
+Loading weights from tiny-yolo.weights...Done!
+	layer_0 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 18690048
+layer 0: Predicted in 0.010553 seconds.
+
+	layer_1 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 1: Predicted in 0.007429 seconds.
+
+	layer_2 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 24920064
+layer 2: Predicted in 0.016615 seconds.
+
+	layer_3 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 3: Predicted in 0.004022 seconds.
+
+	layer_4 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 12460032
+layer 4: Predicted in 0.016246 seconds.
+
+	layer_5 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 5: Predicted in 0.002211 seconds.
+
+	layer_6 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 6230016
+layer 6: Predicted in 0.015559 seconds.
+
+	layer_7 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 7: Predicted in 0.001160 seconds.
+
+	layer_8 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 3115008
+layer 8: Predicted in 0.015076 seconds.
+
+	layer_9 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 9: Predicted in 0.000726 seconds.
+
+	layer_10 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 1557504
+layer 10: Predicted in 0.017906 seconds.
+
+	layer_11 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 11: Predicted in 0.000353 seconds.
+
+	layer_12 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 3115008
+layer 12: Predicted in 0.062915 seconds.
+
+	layer_13 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 6230016
+layer 13: Predicted in 0.065214 seconds.
+
+	layer_14 : <forward_convolutional_layer>
+l.n: 425, l.c: 512, l.groups: 1, l.size: 1, l.w: 13, l.h: 13
+m:425, k:512, n:169,Total:36774400
+batchnorm time : 0.000178 sec
+activate time : 0.000483 sec
+l.workspace_size: 346112
+layer 14: Predicted in 0.033911 seconds.
+
+	layer_15 : <forward_region_layer>
+l.workspace_size: 0
+layer 15: Predicted in 0.004339 seconds.
+
+GPU time 0.220084 seconds.
+
+data/person.jpg: Predicted in 0.302141 seconds.
+dog: 92%
+person: 91%
+horse: 92%
+root@h3ulcb:~/darknet_pearl# ./run.sh
+OPENCL ACTIVATED
+NOTE: This GSX library has the time limitation by reason of an evaluation module.
+INFO: complete to make CL properties
+layer     filters    size              input                output
+    0 conv     16  3 x 3 / 1   416 x 416 x   3   ->   416 x 416 x  16
+    1 max          2 x 2 / 2   416 x 416 x  16   ->   208 x 208 x  16
+    2 conv     32  3 x 3 / 1   208 x 208 x  16   ->   208 x 208 x  32
+    3 max          2 x 2 / 2   208 x 208 x  32   ->   104 x 104 x  32
+    4 conv     64  3 x 3 / 1   104 x 104 x  32   ->   104 x 104 x  64
+    5 max          2 x 2 / 2   104 x 104 x  64   ->    52 x  52 x  64
+    6 conv    128  3 x 3 / 1    52 x  52 x  64   ->    52 x  52 x 128
+    7 max          2 x 2 / 2    52 x  52 x 128   ->    26 x  26 x 128
+    8 conv    256  3 x 3 / 1    26 x  26 x 128   ->    26 x  26 x 256
+    9 max          2 x 2 / 2    26 x  26 x 256   ->    13 x  13 x 256
+   10 conv    512  3 x 3 / 1    13 x  13 x 256   ->    13 x  13 x 512
+   11 max          2 x 2 / 1    13 x  13 x 512   ->    13 x  13 x 512
+   12 conv   1024  3 x 3 / 1    13 x  13 x 512   ->    13 x  13 x1024
+   13 conv    512  3 x 3 / 1    13 x  13 x1024   ->    13 x  13 x 512
+   14 conv    425  1 x 1 / 1    13 x  13 x 512   ->    13 x  13 x 425
+   15 detection
+mask_scale: Using default '1.000000'
+workspace_size: 24920064
+sizeof(float): 4
+Loading weights from tiny-yolo.weights...Done!
+	layer_0 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 18690048
+layer 0: Predicted in 0.009816 seconds.
+
+	layer_1 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 1: Predicted in 0.007552 seconds.
+
+	layer_2 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 24920064
+layer 2: Predicted in 0.016593 seconds.
+
+	layer_3 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 3: Predicted in 0.003944 seconds.
+
+	layer_4 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 12460032
+layer 4: Predicted in 0.016061 seconds.
+
+	layer_5 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 5: Predicted in 0.002089 seconds.
+
+	layer_6 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 6230016
+layer 6: Predicted in 0.015609 seconds.
+
+	layer_7 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 7: Predicted in 0.001197 seconds.
+
+	layer_8 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 3115008
+layer 8: Predicted in 0.014122 seconds.
+
+	layer_9 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 9: Predicted in 0.000729 seconds.
+
+	layer_10 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 1557504
+layer 10: Predicted in 0.018232 seconds.
+
+	layer_11 : <forward_maxpool_layer>
+l.workspace_size: 0
+layer 11: Predicted in 0.000443 seconds.
+
+	layer_12 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 3115008
+layer 12: Predicted in 0.062768 seconds.
+
+	layer_13 : <forward_convolutional_layer_opencl>
+alloc done
+l.workspace_size: 6230016
+layer 13: Predicted in 0.071697 seconds.
+
+	layer_14 : <forward_convolutional_layer>
+l.n: 425, l.c: 512, l.groups: 1, l.size: 1, l.w: 13, l.h: 13
+m:425, k:512, n:169,Total:36774400
+batchnorm time : 0.000175 sec
+activate time : 0.000482 sec
+l.workspace_size: 346112
+layer 14: Predicted in 0.033850 seconds.
+
+	layer_15 : <forward_region_layer>
+l.workspace_size: 0
+layer 15: Predicted in 0.005015 seconds.
+
+GPU time 0.224897 seconds.
+
+data/person.jpg: Predicted in 0.307501 seconds.
+dog: 92%
+person: 91%
+horse: 92%
+root@h3ulcb:~/darknet_pearl# 
