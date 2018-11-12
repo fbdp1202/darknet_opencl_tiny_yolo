@@ -24,5 +24,20 @@ void print_network(network *net);
 int resize_network(network *net, int w, int h);
 void calc_network_cost(network *net);
 
+#ifdef OPENCL
+void forward_network_ocl(network *netp);
+
+#ifdef HALF_MODE
+void forward_network_ocl_half(network *netp);
 #endif
 
+#ifdef SHORT_MODE
+void forward_network_ocl_short(network *netp);
+#endif
+
+#ifdef FIXED_MODE
+void forward_network_ocl_fixed(network *netp);
+#endif
+
+#endif
+#endif

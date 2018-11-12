@@ -6,7 +6,7 @@
 #include <pthread.h>
 
 #define SECRET_NUM -1234
-#define _OCL
+
 extern int gpu_index;
 
 #ifdef GPU
@@ -33,7 +33,7 @@ extern int gpu_index;
     #endif
 #endif
 
-#ifdef _OCL
+#ifdef OPENCL
     #include <CL/cl.h>
 #endif
 
@@ -246,19 +246,6 @@ struct layer{
     float * rolling_mean;
     float * rolling_variance;
 
-    ////////
-
-    cl_half * biases_half;
-    
-    cl_half * scales_half;
-  
-    cl_half * weights_half;
-    
-    cl_half * rolling_mean_half;
-    cl_half * rolling_variance_half;
-
-    //////////
-
     float * x;
     float * x_norm;
 
@@ -422,6 +409,41 @@ struct layer{
     cudnnConvolutionBwdDataAlgo_t bd_algo;
     cudnnConvolutionBwdFilterAlgo_t bf_algo;
 #endif
+#endif
+
+#ifdef OPENCL
+
+#ifdef HALF_MODE
+    cl_half * biases_half;
+    cl_half * scales_half;
+    cl_half * weights_half;
+    cl_half * rolling_mean_half;
+    cl_half * rolling_variance_half;
+#endif
+
+#ifdef SHORT_MODE
+    float wrmax;
+    float wrmin;
+    float wstep;
+
+    int wbitlen;
+
+    unsigned short * weights_short;
+
+#endif
+
+#ifdef FIXED_MODE
+    float wrmax;
+    float wrmin;
+    float wstep;
+
+    float wbitlen;
+    float wzeropoint;
+
+    float * fixed_config;
+    unsigned char * weights_fixed;
+#endif
+
 #endif
 };
 
@@ -636,6 +658,11 @@ float train_networks(network **nets, int n, data d, int interval);
 void sync_nets(network **nets, int n, int interval);
 void harmless_update_network_gpu(network *net);
 #endif
+
+#ifdef OPENCL
+void forward_network_ocl(network *netp);
+#endif
+
 void save_image_png(image im, const char *name);
 void get_next_batch(data d, int n, int offset, float *X, float *y);
 void grayscale_image_3c(image im);

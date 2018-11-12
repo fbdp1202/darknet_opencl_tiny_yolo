@@ -94,4 +94,27 @@ void free_layer(layer l)
     if(l.squared_gpu)             cuda_free(l.squared_gpu);
     if(l.norms_gpu)               cuda_free(l.norms_gpu);
 #endif
+    
+#ifdef OPENCL
+
+#ifdef HALF_MODE
+    if(l.biases_half)             free(l.biases_half);
+    if(l.scales_half)             free(l.scales_half);
+    if(l.weights_half)            free(l.weights_half);
+    if(l.rolling_mean_half)       free(l.rolling_mean_half);
+    if(l.rolling_variance_half)   free(l.rolling_variance_half);
+#endif
+
+#ifdef SHORT_MODE
+    if(l.weights_short)            free(l.weights_short);
+#endif
+
+#ifdef FIXED_MODE
+    if(l.weights_fixed)             free(l.weights_fixed);
+    if(l.fixed_config)              free(l.fixed_config);
+
+#endif
+
+#endif
+
 }

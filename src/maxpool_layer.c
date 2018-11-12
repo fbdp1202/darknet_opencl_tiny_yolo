@@ -84,7 +84,10 @@ void print_in_out(float *in, float *out, int w){
 }
 
 
-void maxpool_ocl(const maxpool_layer l, network net, cl_mem *mo_in, cl_mem *mo_out){
+void maxpool_ocl(const maxpool_layer l, network net, cl_mem *mo_in, cl_mem *mo_out)
+{
+//    printf("<forward_maxpooling_layer_opencl>\n");
+
 	size_t global[3] = { l.w, l.h, l.c };
     //printf(" max pooling.. %.3f %.3f %.3f %.3f\n", net.input[0], net.input[1], net.input[2], net.input[3]);
     //cl_memcpy_to_device(*mo_out, net.input, sizeof(float) * l.w*l.h*l.c);
@@ -100,8 +103,6 @@ void maxpool_ocl(const maxpool_layer l, network net, cl_mem *mo_in, cl_mem *mo_o
 		clSetKernelArg(clGetkrnl_pool2(), 1, sizeof(cl_mem), mo_out);
 		cl_run_kernel3d(clGetkrnl_pool2(), global, local, 3);
 	}
-
-	clFreeMemobj(*mo_out);
 }
 
 

@@ -1,0 +1,94 @@
+
+layer 0:
+memcpy to device Time:	9.200001
+memcpy to device Time:	5.440000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	1986.320068
+
+layer 1:
+Kernel Time:	4405.920410
+
+layer 2:
+memcpy to device Time:	7.040000
+memcpy to device Time:	5.680000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3986.400146
+
+layer 3:
+Kernel Time:	2207.600098
+
+layer 4:
+memcpy to device Time:	12.320001
+memcpy to device Time:	5.680000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3781.680176
+
+layer 5:
+Kernel Time:	1110.320068
+
+layer 6:
+memcpy to device Time:	32.160000
+memcpy to device Time:	5.280000
+memcpy to device Time:	5.200000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3730.560059
+
+layer 7:
+Kernel Time:	589.840027
+
+layer 8:
+memcpy to device Time:	117.840004
+memcpy to device Time:	5.600000
+memcpy to device Time:	5.360000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3634.160156
+
+layer 9:
+Kernel Time:	281.680023
+
+layer 10:
+memcpy to device Time:	471.680023
+memcpy to device Time:	6.000000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3124.160156
+
+layer 11:
+Kernel Time:	83.920006
+
+layer 12:
+memcpy to device Time:	1771.920044
+memcpy to device Time:	5.840000
+memcpy to device Time:	0.000000
+memcpy to device Time:	0.000000
+memcpy to device Time:	0.000000
+Kernel Time:	12154.720703
+
+layer 13:
+memcpy to device Time:	1874.640137
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	12474.560547
+memcpy from device Time:	25.120001
+
+layer 14:
+
+layer 15:
+
+Number of Class is : 1
+GPU time 0.107458 seconds.
+CPU time 0.012366 seconds.
+Each GPU time 0.107458 seconds.
+data/person.jpg: Predicted in 0.131094 seconds.
+

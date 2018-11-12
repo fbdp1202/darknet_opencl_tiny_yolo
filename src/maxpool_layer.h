@@ -21,5 +21,9 @@ void forward_maxpool_layer_gpu(maxpool_layer l, network net);
 void backward_maxpool_layer_gpu(maxpool_layer l, network net);
 #endif
 
+#ifdef HALF_MODE
+void maxpool_ocl(const maxpool_layer l, network net, cl_mem *mo_in, cl_mem *mo_out);
+#endif
+
 #endif
 

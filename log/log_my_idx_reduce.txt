@@ -1,0 +1,94 @@
+
+layer 0:
+memcpy to device Time:	8.960000
+memcpy to device Time:	5.440000
+memcpy to device Time:	5.440000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	1985.920044
+
+layer 1:
+Kernel Time:	4519.840332
+
+layer 2:
+memcpy to device Time:	7.040000
+memcpy to device Time:	5.600000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3972.480225
+
+layer 3:
+Kernel Time:	2212.239990
+
+layer 4:
+memcpy to device Time:	12.160001
+memcpy to device Time:	5.600000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3766.240234
+
+layer 5:
+Kernel Time:	1144.560059
+
+layer 6:
+memcpy to device Time:	25.360001
+memcpy to device Time:	5.360000
+memcpy to device Time:	5.120000
+memcpy to device Time:	5.280000
+memcpy to device Time:	5.200000
+Kernel Time:	3790.480225
+
+layer 7:
+Kernel Time:	573.040039
+
+layer 8:
+memcpy to device Time:	81.360001
+memcpy to device Time:	5.440000
+memcpy to device Time:	5.440000
+memcpy to device Time:	5.520000
+memcpy to device Time:	5.440000
+Kernel Time:	3662.320068
+
+layer 9:
+Kernel Time:	281.279999
+
+layer 10:
+memcpy to device Time:	316.960022
+memcpy to device Time:	5.440000
+memcpy to device Time:	5.440000
+memcpy to device Time:	5.440000
+memcpy to device Time:	5.520000
+Kernel Time:	3664.480225
+
+layer 11:
+Kernel Time:	81.600006
+
+layer 12:
+memcpy to device Time:	1715.680054
+memcpy to device Time:	5.760000
+memcpy to device Time:	6.000000
+memcpy to device Time:	5.600000
+memcpy to device Time:	5.520000
+Kernel Time:	14402.000977
+
+layer 13:
+memcpy to device Time:	2286.560059
+memcpy to device Time:	6.160000
+memcpy to device Time:	0.000000
+memcpy to device Time:	0.000000
+memcpy to device Time:	0.000000
+Kernel Time:	15204.352539
+memcpy from device Time:	40.400002
+
+layer 14:
+
+layer 15:
+
+Number of Class is : 1
+GPU time 0.077950 seconds.
+CPU time 0.013779 seconds.
+Each GPU time 0.077950 seconds.
+data/person.jpg: Predicted in 0.105426 seconds.
+

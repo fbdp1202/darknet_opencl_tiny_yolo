@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
 #include <CL/cl.h>
 
 #include "activation_layer.h"
@@ -33,8 +34,6 @@
 #include "lstm_layer.h"
 #include "utils.h"
 #include "define_cl.h"
-
-#define _OCL
 
 typedef struct{
     char *type;
@@ -756,8 +755,6 @@ network *parse_network_cfg(char *filename)
     net->input_gpu = cuda_make_array(net->input, net->inputs*net->batch);
     net->truth_gpu = cuda_make_array(net->truth, net->truths*net->batch);
 #endif
-    printf("workspace_size: %ld\n",workspace_size);
-    printf("sizeof(float): %d\n", sizeof(float));
     if(workspace_size){
         //printf("%ld\n", workspace_size);
 #ifdef GPU
@@ -1043,6 +1040,108 @@ void load_convolutional_weights_binary(layer l, FILE *fp)
 #endif
 }
 
+#ifdef OPENCL
+
+#ifdef SHORT_MODE
+
+int conversion(float x, float step)
+{
+    if(x < 0)
+        return (x-step/2)/step;
+    else
+        return (x+step/2)/step;
+}
+
+void do_conv_layer_f_to_s(layer l)
+{
+    int num = l.nweights;
+    int i;
+    if(num){
+        // Search Max and Min
+        float wrmax = l.weights[0];
+        float wrmin = l.weights[0];
+        for(i=0; i < num; i++){
+            float tmp = l.weights[i];
+            if(wrmax < tmp)
+                wrmax = tmp;
+            if(wrmin > tmp)
+                wrmin = tmp;
+        }
+        l.wrmax = wrmax;
+        l.wrmin = wrmin;
+
+        l.wstep = (l.wrmax - l.wrmin)/MAX_SHORT;
+        l.wzeropoint = conversion(-wrmin, l.wstep);
+
+        // convert float to short
+        for(i=0; i < num; i++)
+        {
+            int tmp = conversion(l.weights[i], l.wstep) + l.wzeropoint;
+            if(tmp < 0)
+                tmp = 0;
+            else if(tmp > MAX_SHORT)
+                tmp = MAX_SHORT;
+            l.weights_short[i] = (unsigned short)(tmp);
+        }
+    }
+}
+#endif
+
+#ifdef FIXED_MODE
+
+float conversion(float x, float step)
+{
+    if(x < 0)
+        return (x-step/2)/step;
+    else
+        return (x+step/2)/step;
+}
+
+void do_conv_layer_float_to_fixed(layer l)
+{
+    int num = l.nweights;
+    int i;
+    if(num){
+        // Search Max and Min
+        float wrmax = l.weights[0];
+        float wrmin = l.weights[0];
+        for(i=0; i < num; i++){
+            float tmp = l.weights[i];
+            if(wrmax < tmp)
+                wrmax = tmp;
+            if(wrmin > tmp)
+                wrmin = tmp;
+        }
+        l.wrmax = wrmax;
+        l.wrmin = wrmin;
+
+        l.wstep = (l.wrmax - l.wrmin)/255.f;
+        // l.wzeropoint = conversion(-wrmin, l.wstep);
+
+        l.fixed_config[0] = l.wrmin;
+        l.fixed_config[1] = l.wstep;
+        // convert float to short
+        for(i=0; i < num; i++)
+        {
+            // float tmp = conversion(l.weights[i], l.wstep) + l.wzeropoint;
+            // float tmp = (l.weights[i] - l.wrmin)/l.wstep;
+            unsigned char tmp = ((l.weights[i] - l.wrmin)/l.wstep + 0.5);
+            if(tmp < 0)
+                tmp = 0;
+            else if(tmp > MAX_FIXED)
+                tmp = MAX_FIXED;
+            int idxf = i %(l.size * l.size);
+            int ic = (i / (l.size * l.size))%l.c;
+            int ioutc = i/(l.size * l.size * l.c);
+            l.weights_fixed[idxf + ic*(l.size*l.size*l.out_c) + ioutc*l.size*l.size] = tmp;
+            // l.weights_fixed[i] = tmp;
+        }
+    }
+}
+#endif
+
+#endif
+
 void load_convolutional_weights(layer l, FILE *fp, int index)
 {
    
@@ -1090,15 +1189,36 @@ void load_convolutional_weights(layer l, FILE *fp, int index)
         transpose_matrix(l.weights, l.c*l.size*l.size, l.n);
     }
 
-#ifdef _OCL
-    if(index < 14){
+#ifdef OPENCL
 
-        do_conversion_f_to_h(l.biases_half, l.biases, l.n);
-        do_conversion_f_to_h(l.scales_half, l.scales, l.n);
-        do_conversion_f_to_h(l.rolling_mean_half, l.rolling_mean, l.n);
-        do_conversion_f_to_h(l.rolling_variance_half, l.rolling_variance, l.n);
-        do_conversion_f_to_h(l.weights_half, l.weights, num);
+#ifdef HALF_MODE
+    if(index < 14){
+        do_conversion_f_to_h(l.weights_half,          l.weights,          num );
+        do_conversion_f_to_h(l.biases_half,           l.biases,           l.n );
+        
+        if (l.batch_normalize && (!l.dontloadscales)){
+            do_conversion_f_to_h(l.scales_half,           l.scales,           l.n );
+            do_conversion_f_to_h(l.rolling_mean_half,     l.rolling_mean,     l.n );
+            do_conversion_f_to_h(l.rolling_variance_half, l.rolling_variance, l.n );
+        }
     }
+#endif
+
+#ifdef SHORT_MODE
+    if(index < 14){
+        do_conv_layer_f_to_s(l);
+       // display_value_range(l.weights, num, index);
+    }
+    // calculate_noise(l.weights, num);
+#endif
+
+#ifdef FIXED_MODE
+    if(index < 14){
+        do_conv_layer_float_to_fixed(l);
+       // display_value_range(l.weights, num, index);
+    }
+#endif
+
 #endif
 
 #ifdef GPU

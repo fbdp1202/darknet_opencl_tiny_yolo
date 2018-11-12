@@ -34,8 +34,6 @@
 
 #include "test_cl.h"
 
-#define LEN_VEC 1
-
 load_args get_base_args(network *net)
 {
     load_args args = {0};
@@ -141,7 +139,7 @@ char *get_layer_string(LAYER_TYPE a)
         case GRU:
             return "gru";
         case LSTM:
-	    return "lstm";
+        return "lstm";
         case CRNN:
             return "crnn";
         case MAXPOOL:
@@ -187,32 +185,6 @@ network *make_network(int n)
     return net;
 }
 
-void weight_reorder(convolutional_layer l){
-    int i, j, k, w;
-    int m = l.n / l.groups;
-    int kk = l.size*l.size*l.c / l.groups;
-    cl_half *temp = (cl_half*)malloc(sizeof(cl_half)*m*kk);
-    printf("allocation done!!!!!!!\n");
-    int cnt=0;
-    //printf("l weight [0] : %f\n", l.weights[0]);
-    for(i = 0; i<l.out_c/8; i++){
-       // printf("i : %d\n", i);
-        for(j = 0; j<l.c; j++){
-         //   printf("j : %d\n", j);
-            for(k = 0; k<8; k++){
-           //     printf("k : %d\n", k);
-                for(w=0;w<9;w++) 
-                    temp[cnt++] = l.weights_half[9*l.c*8*i + 9*l.c*k + 9*j + w];
-            }
-        }
-    }
-    
-    for(i = 0; i < m*kk; i++) l.weights_half[i] = temp[i];
-    free(temp);
-    
-}
-
-
 void forward_network(network *netp)
 {
 #ifdef GPU
@@ -221,201 +193,28 @@ void forward_network(network *netp)
         return;
     }
 #endif
-    network net = *netp;
-    int i;
-    int input_size = net.layers[0].w * net.layers[0].h * net.layers[0].c;
-    double gpu_time = 0; 
-    double cpu_time = 0;
-    cl_half *out_half; float *out_float;
-    cl_mem mo_in, mo_out;
-    
-    int sz_in = 0, sz_out = 0;
-    for(i = 0; i < 15; i++){
-        int n = net.layers[i].c * net.layers[i].w * net.layers[i].h;
-        int n2 = net.layers[i].out_c * net.layers[i].out_w * net.layers[i].out_h;
-        if( n > sz_in) sz_in = n;
-        if( n2 > sz_out) sz_out = n2; 
-    }
-    out_half = (cl_half *)malloc(sizeof(cl_half)*sz_out);
-	out_float = (float *)malloc(sizeof(float)*sz_out);
 
-    mo_in = clCreateMemobj(CL_MEM_READ_WRITE, sizeof(cl_half) * sz_in, NULL);
-    cl_half *copy_input = malloc(sizeof(cl_half) * net.layers[0].w * net.layers[0].h * net.layers[0].c);
-    do_conversion_f_to_h(copy_input, net.input, input_size);
-
-#if 1
-    layer il;
-    il = net.layers[12];
-    if(LEN_VEC > 1) weight_reorder(il);
-    il = net.layers[13];
-    if(LEN_VEC > 1) weight_reorder(il);
+#ifdef OPENCL
+    forward_network_ocl(netp);
+    return;
 #endif
 
-	cl_memcpy_to_device(mo_in, copy_input, sizeof(cl_half) * net.layers[0].w * net.layers[0].h * net.layers[0].c);
+    network net = *netp;
+    int i;
     for(i = 0; i < net.n; ++i){
         net.index = i;
         layer l = net.layers[i];
         if(l.delta){
             fill_cpu(l.outputs * l.batch, 0, l.delta, 1);
         }
-
-        double time=what_time_is_it_now();
-        switch(i){
-            case 0:
-            case 2:
-            case 4:
-            case 6:
-            case 8:
-            case 10:
-                printf("\tlayer_%d : ",i);
-                printf("<forward_convolutional_layer_opencl>\n"); 
-                conv_ocl_real2(l, net, &mo_in, &mo_out, -1);
-                break;
-		    
-            case 12:
-            case 13:
-                printf("\tlayer_%d : ",i);
-                printf("<forward_convolutional_layer_opencl>\n"); 
-                conv_ocl_real2(l, net, &mo_in, &mo_out, LEN_VEC);
-                break;
-
-	        case 14:
-                printf("\tlayer_%d : ",i);
-                printf("<forward_convolutional_layer>\n");
-                forward_convolutional_layer(l, net);
-                break;
-            
-            case 15:
-                printf("\tlayer_%d : ",i);
-                printf("<forward_region_layer>\n");
-                forward_region_layer(l, net);
-                break;
-            
-            default:
-                printf("\tlayer_%d : ",i);
-                printf("<forward_maxpool_layer>\n");
-                maxpool_ocl(l, net, &mo_in, &mo_out);
-        }
-        
-        printf("l.workspace_size: %d\n", l.workspace_size);
-        switch(i){
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-            case 12:
-            case 13:
-                gpu_time += what_time_is_it_now()-time; break;
-            case 14:
-            case 15:
-                cpu_time += what_time_is_it_now()-time;
-        }
-
-        printf("layer %d: Predicted in %f seconds.\n\n", i, what_time_is_it_now()-time);
-
-	    if(i > 12){
-		    if(i == 13){
-                int output_size= l.out_w*l.out_h*l.out_c;
-               
-                cl_half *output_cl_half = malloc(sizeof(cl_half)*output_size);
-                cl_memcpy_from_device(output_cl_half, mo_in, sizeof(cl_half) * l.out_w*l.out_h*l.out_c);    
-                do_conversion_h_to_f(l.output, output_cl_half, output_size);
-                free(output_cl_half); 
-
-                printf("output[0] : %f\n", l.output[0]);
-            } 		  
-
-            net.input = l.output;
-            if(l.truth) net.truth = l.output;
-        }
-    }
-    
-    clFreeMemobj(mo_in);
-    clFreeMemobj(mo_out);
-    free(copy_input);
-    free(out_half); free(out_float); 
-
-    printf("GPU time %f seconds.\n\n", gpu_time);
-    printf("CPU time %f seconds.\n\n", cpu_time);
-    calc_network_cost(netp);
-
-}
-
-void forward_network_origin(network *netp)
-{
-#ifdef GPU
-    if(netp->gpu_index >= 0){
-        forward_network_gpu(netp);   
-        return;
-    }
-#endif
-    network net = *netp;
-    int i;
-    double gpu_time = 0;
-    for(i = 0; i < net.n; ++i){
-        net.index = i;
-        layer l = net.layers[i];
-        if(l.delta){
-            fill_cpu(l.outputs * l.batch, 0, l.delta, 1);
-        }
-
-        double time=what_time_is_it_now();
-        switch(i){
-            case 0:
-            case 2:
-            case 4:
-            case 6:
-            case 8:
-            case 10:
-            case 12:
-            case 13:
-            case 14:
-                printf("\tlayer_%d : ",i);
-                printf("<forward_convolutional_layer>\n");
-                forward_convolutional_layer(l, net);
-                break;
-            case 15:
-                printf("\tlayer_%d : ",i);
-                printf("<forward_region_layer>\n");
-                forward_region_layer(l, net);
-                break;
-            default:
-                printf("\tlayer_%d : ",i);
-                printf("<forward_maxpool_layer>\n");
-                forward_maxpool_layer(l, net);
-        }
-        printf("l.workspace_size: %d\n", l.workspace_size);
-        switch(i){
-            case 0:
-            case 2:
-            case 4:
-            case 6:
-            case 8:
-            case 10:
-            case 12:
-            case 13:
-                gpu_time += what_time_is_it_now()-time;
-        }
-        printf("layer %d: Predicted in %f seconds.\n\n", i, what_time_is_it_now()-time);
-        //l.forward(l, net);
-
+        l.forward(l, net);
         net.input = l.output;
         if(l.truth) {
             net.truth = l.output;
         }
     }
-    printf("GPU time %f seconds.\n\n", i, gpu_time);
     calc_network_cost(netp);
 }
-
 
 void update_network(network *netp)
 {
@@ -1288,4 +1087,4 @@ void pull_network_output(network *net)
     cuda_pull_array(l.output_gpu, l.output, l.outputs*l.batch);
 }
 
-#endif
+#endif // GPU

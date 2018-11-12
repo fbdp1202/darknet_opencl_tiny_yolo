@@ -1,4 +1,5 @@
 #include "define_cl.h"
+#ifdef OPENCL
 
 cl_platform_id platform_id = NULL;
 cl_device_id device_id = NULL;
@@ -6,15 +7,257 @@ cl_context context = NULL;
 cl_program program = NULL;
 cl_command_queue command_queue = NULL;
 
-cl_kernel krnl_pool = NULL;
 cl_kernel krnl_conv3 = NULL;
-cl_kernel krnl_pool2 = NULL;
+cl_kernel krnl_in_conv3 = NULL;
+cl_kernel krnl_in_ConvMax = NULL;
+cl_kernel krnl_Second_ConvMax = NULL;
+
+cl_kernel krnl_conv3_14x14 = NULL;
+cl_kernel krnl_in_conv3_13x13 = NULL;
+
 cl_kernel krnl_conv3_vec = NULL;
 cl_kernel krnl_conv3_vec4 = NULL;
 cl_kernel krnl_conv3_vec8 = NULL;
 cl_kernel krnl_conv3_vec16 = NULL;
 
+cl_kernel krnl_pool = NULL;
+cl_kernel krnl_pool2 = NULL;
+
 cl_mem d_a, d_b, d_c;
+
+cl_mem mo_filt_0, mo_filt_2, mo_filt_4, mo_filt_6, mo_filt_8, mo_filt_10, mo_filt_12, mo_filt_13;
+cl_mem mo_biases_0, mo_biases_2, mo_biases_4, mo_biases_6, mo_biases_8, mo_biases_10, mo_biases_12, mo_biases_13;
+cl_mem mo_mean_0, mo_mean_2, mo_mean_4, mo_mean_6, mo_mean_8, mo_mean_10, mo_mean_12, mo_mean_13;
+cl_mem mo_variance_0, mo_variance_2, mo_variance_4, mo_variance_6, mo_variance_8, mo_variance_10, mo_variance_12, mo_variance_13;
+cl_mem mo_scales_0, mo_scales_2, mo_scales_4, mo_scales_6, mo_scales_8, mo_scales_10, mo_scales_12, mo_scales_13;
+
+void clSetupWmem(int idx, int m, int k, unsigned char *mo_filt, float *biases, 
+				float *mean, float *variance, float *scales)
+{
+	switch(idx){
+		case 0:  
+			mo_filt_0  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(unsigned char) * m * k, NULL); 
+		    cl_memcpy_to_device(mo_filt_0, mo_filt, sizeof(unsigned char) * m * k);
+
+			mo_biases_0  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_biases_0, biases, sizeof(float) * m);
+
+			mo_mean_0  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_mean_0, mean, sizeof(float) * m);
+
+			mo_variance_0  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_variance_0, variance, sizeof(float) * m);
+
+			mo_scales_0  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_scales_0, scales, sizeof(float) * m);
+			break;
+		case 2:  
+			mo_filt_2  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(unsigned char) * m * k, NULL); 
+		    cl_memcpy_to_device(mo_filt_2, mo_filt, sizeof(unsigned char) * m * k);
+
+			mo_biases_2  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_biases_2, biases, sizeof(float) * m);
+
+			mo_mean_2  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_mean_2, mean, sizeof(float) * m);
+
+			mo_variance_2  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_variance_2, variance, sizeof(float) * m);
+
+			mo_scales_2  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_scales_2, scales, sizeof(float) * m);
+		    break;
+		case 4:  
+			mo_filt_4  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(unsigned char) * m * k, NULL); 
+		    cl_memcpy_to_device(mo_filt_4, mo_filt, sizeof(unsigned char) * m * k);
+
+			mo_biases_4  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_biases_4, biases, sizeof(float) * m);
+
+			mo_mean_4  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_mean_4, mean, sizeof(float) * m);
+
+			mo_variance_4  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_variance_4, variance, sizeof(float) * m);
+
+			mo_scales_4  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_scales_4, scales, sizeof(float) * m);
+		    break;
+		case 6:  
+			mo_filt_6  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(unsigned char) * m * k, NULL); 
+		    cl_memcpy_to_device(mo_filt_6, mo_filt, sizeof(unsigned char) * m * k);
+
+			mo_biases_6  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_biases_6, biases, sizeof(float) * m);
+
+			mo_mean_6  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_mean_6, mean, sizeof(float) * m);
+
+			mo_variance_6  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_variance_6, variance, sizeof(float) * m);
+
+			mo_scales_6  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_scales_6, scales, sizeof(float) * m);
+		    break;
+		case 8:  
+			mo_filt_8  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(unsigned char) * m * k, NULL); 
+		    cl_memcpy_to_device(mo_filt_8, mo_filt, sizeof(unsigned char) * m * k);
+
+			mo_biases_8  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_biases_8, biases, sizeof(float) * m);
+
+			mo_mean_8  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_mean_8, mean, sizeof(float) * m);
+
+			mo_variance_8  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_variance_8, variance, sizeof(float) * m);
+
+			mo_scales_8  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_scales_8, scales, sizeof(float) * m);
+		    break;
+		case 10: 
+			mo_filt_10  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(unsigned char) * m * k, NULL); 
+		    cl_memcpy_to_device(mo_filt_10, mo_filt, sizeof(unsigned char) * m * k);
+
+			mo_biases_10  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_biases_10, biases, sizeof(float) * m);
+
+			mo_mean_10  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_mean_10, mean, sizeof(float) * m);
+
+			mo_variance_10  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_variance_10, variance, sizeof(float) * m);
+
+			mo_scales_10  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_scales_10, scales, sizeof(float) * m);
+		    break;
+		case 12: 
+			mo_filt_12  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(unsigned char) * m * k, NULL); 
+		    cl_memcpy_to_device(mo_filt_12, mo_filt, sizeof(unsigned char) * m * k);
+
+			mo_biases_12  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_biases_12, biases, sizeof(float) * m);
+
+			mo_mean_12  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_mean_12, mean, sizeof(float) * m);
+
+			mo_variance_12  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_variance_12, variance, sizeof(float) * m);
+
+			mo_scales_12  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_scales_12, scales, sizeof(float) * m);
+		    break;
+		case 13: 
+			mo_filt_13  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(unsigned char) * m * k, NULL); 
+		    cl_memcpy_to_device(mo_filt_13, mo_filt, sizeof(unsigned char) * m * k);
+
+			mo_biases_13  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_biases_13, biases, sizeof(float) * m);
+
+			mo_mean_13  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_mean_13, mean, sizeof(float) * m);
+
+			mo_variance_13  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_variance_13, variance, sizeof(float) * m);
+
+			mo_scales_13  = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL); 
+		    cl_memcpy_to_device(mo_scales_13, scales, sizeof(float) * m);
+		    break;
+		default:
+			;
+	}
+}
+
+void clReleaseWmem(){
+	clFreeMemobj(mo_filt_0);
+	clFreeMemobj(mo_filt_2);
+	clFreeMemobj(mo_filt_4);
+	clFreeMemobj(mo_filt_6);
+	clFreeMemobj(mo_filt_8);
+	clFreeMemobj(mo_filt_10);
+	clFreeMemobj(mo_filt_12);
+	clFreeMemobj(mo_filt_13);
+}
+
+cl_mem* clGet_mo_filt_Mem(int i){
+	switch(i){
+		case 0:	 return &mo_filt_0;
+		case 2:	 return &mo_filt_2;
+		case 4:	 return &mo_filt_4;
+		case 6:	 return &mo_filt_6;
+		case 8:	 return &mo_filt_8;
+		case 10: return &mo_filt_10;
+		case 12: return &mo_filt_12;
+		case 13: return &mo_filt_13;
+	}
+	return NULL;
+}
+
+cl_mem* clGet_mo_biases_Mem(int i){
+	switch(i){
+		case 0:	 return &mo_biases_0;
+		case 2:	 return &mo_biases_2;
+		case 4:	 return &mo_biases_4;
+		case 6:	 return &mo_biases_6;
+		case 8:	 return &mo_biases_8;
+		case 10: return &mo_biases_10;
+		case 12: return &mo_biases_12;
+		case 13: return &mo_biases_13;
+	}
+	return NULL;
+}
+
+cl_mem* clGet_mo_mean_Mem(int i){
+	switch(i){
+		case 0:	 return &mo_mean_0;
+		case 2:	 return &mo_mean_2;
+		case 4:	 return &mo_mean_4;
+		case 6:	 return &mo_mean_6;
+		case 8:	 return &mo_mean_8;
+		case 10: return &mo_mean_10;
+		case 12: return &mo_mean_12;
+		case 13: return &mo_mean_13;
+	}
+	return NULL;
+}
+
+cl_mem* clGet_mo_variance_Mem(int i){
+	switch(i){
+		case 0:	 return &mo_variance_0;
+		case 2:	 return &mo_variance_2;
+		case 4:	 return &mo_variance_4;
+		case 6:	 return &mo_variance_6;
+		case 8:	 return &mo_variance_8;
+		case 10: return &mo_variance_10;
+		case 12: return &mo_variance_12;
+		case 13: return &mo_variance_13;
+	}
+	return NULL;
+}
+
+cl_mem* clGet_mo_scales_Mem(int i){
+	switch(i){
+		case 0:	 return &mo_scales_0;
+		case 2:	 return &mo_scales_2;
+		case 4:	 return &mo_scales_4;
+		case 6:	 return &mo_scales_6;
+		case 8:	 return &mo_scales_8;
+		case 10: return &mo_scales_10;
+		case 12: return &mo_scales_12;
+		case 13: return &mo_scales_13;
+	}
+	return NULL;
+}
+
+
+cl_mem* clGetpMem_mo_filt_0() { return &mo_filt_0; }
+cl_mem* clGetpMem_mo_filt_2() { return &mo_filt_2; }
+cl_mem* clGetpMem_mo_filt_4() { return &mo_filt_4; }
+cl_mem* clGetpMem_mo_filt_6() { return &mo_filt_6; }
+cl_mem* clGetpMem_mo_filt_8() { return &mo_filt_8; }
+cl_mem* clGetpMem_mo_filt_10() { return &mo_filt_10; }
+cl_mem* clGetpMem_mo_filt_12() { return &mo_filt_12; }
+cl_mem* clGetpMem_mo_filt_13() { return &mo_filt_13; }
 
 cl_mem clGetMem_d_a() { return d_a; }
 cl_mem clGetMem_d_b() { return d_b; }
@@ -36,13 +279,24 @@ void clReleaseMem() {
 	clFreeMemobj(d_c);
 }
 
-cl_kernel clGetkrnl_pool() { return krnl_pool; }
 cl_kernel clGetkrnl_conv3() { return krnl_conv3; }
-cl_kernel clGetkrnl_pool2() { return krnl_pool2; }
+cl_kernel clGetkrnl_in_conv3() { return krnl_in_conv3; }
+cl_kernel clGetkrnl_in_ConvMax() { return krnl_in_ConvMax; }
+cl_kernel clGetkrnl_Second_ConvMax() { return krnl_Second_ConvMax; }
+
+
+cl_kernel clGetkrnl_conv3_14x14() { return krnl_conv3_14x14; }
+cl_kernel clGetkrnl_in_conv3_13x13() { return krnl_in_conv3_13x13; }
+
 cl_kernel clGetkrnl_conv3_vec() {return krnl_conv3_vec; }
 cl_kernel clGetkrnl_conv3_vec4() {return krnl_conv3_vec4; }
 cl_kernel clGetkrnl_conv3_vec8() {return krnl_conv3_vec8; }
 cl_kernel clGetkrnl_conv3_vec16() {return krnl_conv3_vec16; }
+
+cl_kernel clGetkrnl_pool() { return krnl_pool; }
+cl_kernel clGetkrnl_pool2() { return krnl_pool2; }
+
+FILE *fp;
 
 void Deivce_info(cl_platform_id platform, cl_device_id device){
 	cl_int err;
@@ -230,7 +484,7 @@ void clSetup(const char *krnl_file) {
 		exit(EXIT_FAILURE);
 	}
 
-	command_queue = clCreateCommandQueue(context, device_id, 0, &err);
+	command_queue = clCreateCommandQueue(context, device_id, CL_QUEUE_PROFILING_ENABLE, &err);
 	if (err != CL_SUCCESS) {
 		printf("Error: Failed to create a command queue! : %s\n", clGetErrorString(err));
 		printf("Test failed\n");
@@ -277,28 +531,101 @@ void clSetup(const char *krnl_file) {
 		exit(EXIT_FAILURE);
 	}
 
-	krnl_conv3_vec = clCreateKernel(program, "Conv3_vec", &err);
+#ifdef FIXED_MODE
+	krnl_conv3_14x14 = clCreateKernel(program, "Conv3_14x14", &err);
 	if (err != CL_SUCCESS) {
-		printf("Error: Failed to create kernel for conv3_vec: %s\n", clGetErrorString(err));
+		printf("Error: Failed to create kernel for Conv3_14x14: %s\n", clGetErrorString(err));
+		exit(EXIT_FAILURE);
+	}	
+#endif
+
+#if (!(defined(SHORT_MODE) && defined(HALF_MODE)))
+	krnl_in_conv3 = clCreateKernel(program, "in_Conv3", &err);
+	if (err != CL_SUCCESS) {
+		printf("Error: Failed to create kernel for conv3: %s\n", clGetErrorString(err));
 		exit(EXIT_FAILURE);
 	}
 
-	krnl_conv3_vec4 = clCreateKernel(program, "Conv3_vec4", &err);
+	krnl_in_ConvMax = clCreateKernel(program, "in_ConvMax", &err);
 	if (err != CL_SUCCESS) {
-		printf("Error: Failed to create kernel for conv3_vec4: %s\n", clGetErrorString(err));
+		printf("Error: Failed to create kernel for in_ConvMax: %s\n", clGetErrorString(err));
 		exit(EXIT_FAILURE);
 	}
 
-	krnl_conv3_vec8 = clCreateKernel(program, "Conv3_vec8", &err);
+	krnl_Second_ConvMax = clCreateKernel(program, "Second_ConvMax", &err);
 	if (err != CL_SUCCESS) {
-		printf("Error: Failed to create kernel for conv3_vec8: %s\n", clGetErrorString(err));
+		printf("Error: Failed to create kernel for Second_ConvMax: %s\n", clGetErrorString(err));
 		exit(EXIT_FAILURE);
 	}
 
-	krnl_conv3_vec16 = clCreateKernel(program, "Conv3_vec16", &err);
+	krnl_in_conv3_13x13 = clCreateKernel(program, "Conv3_13x13", &err);
 	if (err != CL_SUCCESS) {
-		printf("Error: Failed to create kernel for conv3_vec16: %s\n", clGetErrorString(err));
+		printf("Error: Failed to create kernel for conv3: %s\n", clGetErrorString(err));
 		exit(EXIT_FAILURE);
+	}
+
+	size_t local;
+
+	err = clGetKernelWorkGroupInfo(krnl_in_conv3_13x13, device_id, CL_KERNEL_WORK_GROUP_SIZE, sizeof(local), &local, NULL);
+	if (err != CL_SUCCESS)
+	{
+		printf("Error: Failed to retrieve kernel work group info! %d\n", err);
+		exit(1);
+	}
+    printf("\t\tCL_KERNEL_WORK_GROUP_SIZE Total Size: %ld\n", local);
+
+	err = clGetKernelWorkGroupInfo(krnl_in_conv3_13x13, device_id, CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, sizeof(local), &local, NULL);
+	if (err != CL_SUCCESS)
+	{
+		printf("Error: Failed to retrieve CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE info! %d\n", err);
+		exit(1);
+	}
+    printf("\t\tCL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE Total Size: %ld\n", local);
+
+	if (err != CL_SUCCESS) {
+		printf("Error: Failed to create kernel for conv3: %s\n", clGetErrorString(err));
+		exit(EXIT_FAILURE);
+	}
+
+
+#endif
+	switch(VEC){
+		case 2:
+		{
+			krnl_conv3_vec = clCreateKernel(program, "Conv3_vec", &err);
+			if (err != CL_SUCCESS) {
+				printf("Error: Failed to create kernel for conv3_vec: %s\n", clGetErrorString(err));
+				exit(EXIT_FAILURE);
+			}
+			break;
+		}
+		case 4:
+		{			
+			krnl_conv3_vec4 = clCreateKernel(program, "Conv3_vec4", &err);
+			if (err != CL_SUCCESS) {
+				printf("Error: Failed to create kernel for conv3_vec4: %s\n", clGetErrorString(err));
+				exit(EXIT_FAILURE);
+			}
+			break;
+		}
+		case 8:
+		{
+			krnl_conv3_vec8 = clCreateKernel(program, "Conv3_vec8", &err);
+			if (err != CL_SUCCESS) {
+				printf("Error: Failed to create kernel for conv3_vec8: %s\n", clGetErrorString(err));
+				exit(EXIT_FAILURE);
+			}
+			break;
+		}
+		case 16:
+		{
+			krnl_conv3_vec16 = clCreateKernel(program, "Conv3_vec16", &err);
+			if (err != CL_SUCCESS) {
+				printf("Error: Failed to create kernel for conv3_vec16: %s\n", clGetErrorString(err));
+				exit(EXIT_FAILURE);
+			}
+			break;
+		}
 	}
 
 	krnl_pool2 = clCreateKernel(program, "Pool2", &err);
@@ -308,6 +635,7 @@ void clSetup(const char *krnl_file) {
 	}
 
 	printf("INFO: complete to make CL properties\n");
+	fp = fopen("log.txt", "w");
 }
 
 void clReleaseAll() {
@@ -316,6 +644,7 @@ void clReleaseAll() {
 	
 	clReleaseKernel(krnl_pool);
 	clReleaseKernel(krnl_conv3);
+	clReleaseKernel(krnl_in_conv3);
 	clReleaseKernel(krnl_pool2);
 	clReleaseKernel(krnl_conv3_vec);
 	clReleaseKernel(krnl_conv3_vec4);
@@ -324,6 +653,7 @@ void clReleaseAll() {
 	clReleaseProgram(program);
 	clReleaseCommandQueue(command_queue);
 	clReleaseContext(context);
+	fclose(fp);
 }
 
 void clSetKrnlArg(cl_kernel krnl, cl_uint num, size_t size, void *ptr) {
@@ -353,22 +683,32 @@ void clFreeMemobj(cl_mem buffer) {
 
 void cl_memcpy_to_device(cl_mem dest, void* src,
 	size_t size) {
+
+	cl_event event;
+
 	int err = clEnqueueWriteBuffer(command_queue, dest, CL_TRUE, 0, size,
-		src, 0, NULL, NULL);
+		src, 0, NULL, &event);
 	if (err != CL_SUCCESS) {
 		printf("Error: Failed to write to source array a!\n");
 		exit(EXIT_FAILURE);
 	}
+	if(log_sw)
+		cl_estimate_time(event, "memcpy to device Time");
 }
 
 void cl_memcpy_from_device(void* dest, cl_mem src,
 	size_t size) {
+
+	cl_event event;
+
 	int err = clEnqueueReadBuffer(command_queue, src, CL_TRUE, 0, size,
-		dest, 0, NULL, NULL);
+		dest, 0, NULL, &event);
 	if (err != CL_SUCCESS) {
 		printf("Error: Failed to read output array! %s\n", clGetErrorString(err));
 		exit(EXIT_FAILURE);
 	}
+	if(log_sw)
+		cl_estimate_time(event, "memcpy from device Time");
 }
 
 void cl_run_kernel3d(cl_kernel krnl, size_t* global, size_t* local, cl_uint workDim) {
@@ -380,8 +720,11 @@ void cl_run_kernel3d(cl_kernel krnl, size_t* global, size_t* local, cl_uint work
 		printf("Error: failed to execute kernel! %s\n", clGetErrorString(err));
 		exit(EXIT_FAILURE);
 	}
-
 	clWaitForEvents(1, &event);
+
+	if(log_sw)
+		cl_estimate_time(event, "Kernel Time");
+
 	clReleaseEvent(event);
 }
 
@@ -394,6 +737,31 @@ void cl_run_kernel3d_async(cl_kernel krnl, size_t* global, size_t* local, cl_uin
 		exit(EXIT_FAILURE);
 	}
 }
+
+void cl_estimate_time(cl_event event, const char* comment){
+	cl_ulong start, end;
+	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(cl_ulong), &end, NULL);
+	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_START, sizeof(cl_ulong), &start, NULL);	
+	float time = (end-start)*1.0e-3f;
+	if(time < 1e10){
+		printf("%s:\t%.6f\n",comment,time);
+	}
+	else{
+		printf("%s:\tUnknown\n", comment);
+	}
+	if(fp){
+		if(time < 1e10){
+			fprintf(fp,"%s:\t%.6f\n",comment,time);
+		}
+		else{
+			fprintf(fp,"%s:\tUnknown\n", comment);
+		}
+	}else{
+		printf("error file is not open\n");
+	}
+
+}
+
 
 #ifndef INFINITY
 #define INFINITY 1.0/0.0
@@ -480,3 +848,54 @@ void do_conversion_f_to_h(cl_half *to, float *from, int size){
     }
 }
 
+
+void do_conversion_f_to_s(short *to, float *from, int size)
+{
+	int i;
+	for(i=0; i<size; i++) to[i] = from[i];
+}
+
+void do_conversion_s_to_f(float *to, short *from, int size)
+{
+	int i;
+	for(i=0; i<size; i++) to[i] = from[i];
+}
+
+void display_value_range(float *target, int size, int index)
+{
+	int i;
+	char buf[256];
+	sprintf(buf, "weight_%d",index);
+	FILE *fp = fopen(buf, "w");
+	for(i=0; i<size; i++) fprintf(fp,"%.6f\n", target[i]);
+	fclose(fp);
+}
+
+void calculate_noise(float *target, int size)
+{
+	int i, c;
+	float noise[15] = {0,};
+	int num = 1;
+	float tmp;
+	for(c = 0; c <15; c++){
+		for(i = 0; i < size; i++){
+			tmp = target[i] - (float)round(target[i]*num)/(float)num;
+			if(tmp < 0) tmp = -tmp;
+			noise[c] += tmp;
+		}
+		printf("noise[%d]: %f\n", c, noise[c]/(float)size);
+		num *= 2;
+	}
+}
+
+void define_log(const char* comment)
+{
+	if(fp){
+		fprintf(fp, "%s\n", comment);
+	}
+	else{
+		printf("Error File Open\n");
+	}
+}
+
+#endif

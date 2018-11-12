@@ -1,0 +1,94 @@
+
+layer 0:
+memcpy to device Time:	9.360001
+memcpy to device Time:	5.440000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	1738.480103
+
+layer 1:
+Kernel Time:	4578.080078
+
+layer 2:
+memcpy to device Time:	6.720000
+memcpy to device Time:	5.520000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3277.920166
+
+layer 3:
+Kernel Time:	2213.200195
+
+layer 4:
+memcpy to device Time:	12.720000
+memcpy to device Time:	5.760000
+memcpy to device Time:	Unknown
+memcpy to device Time:	5.440000
+memcpy to device Time:	Unknown
+Kernel Time:	3139.200195
+
+layer 5:
+Kernel Time:	1145.040039
+
+layer 6:
+memcpy to device Time:	28.800001
+memcpy to device Time:	Unknown
+memcpy to device Time:	5.200000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3102.720215
+
+layer 7:
+Kernel Time:	555.760010
+
+layer 8:
+memcpy to device Time:	0.000000
+memcpy to device Time:	Unknown
+memcpy to device Time:	5.440000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3134.080078
+
+layer 9:
+Kernel Time:	281.600006
+
+layer 10:
+memcpy to device Time:	400.080017
+memcpy to device Time:	Unknown
+memcpy to device Time:	5.440000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3120.320068
+
+layer 11:
+Kernel Time:	82.560005
+
+layer 12:
+memcpy to device Time:	1765.440063
+memcpy to device Time:	6.080000
+memcpy to device Time:	5.760000
+memcpy to device Time:	5.680000
+memcpy to device Time:	5.600000
+Kernel Time:	12420.720703
+
+layer 13:
+memcpy to device Time:	1883.120117
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	12223.041016
+memcpy from device Time:	72.400002
+
+layer 14:
+
+layer 15:
+
+Number of Class is : 1
+GPU time 0.066287 seconds.
+CPU time 0.012017 seconds.
+Each GPU time 0.066287 seconds.
+data/person.jpg: Predicted in 0.097172 seconds.
+

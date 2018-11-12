@@ -8,9 +8,9 @@
 #include "network.h"
 #include "define_cl.h"
 
-#ifdef _OCL
+#ifdef OPENCL
 #include <CL/cl.h>
-#endif
+#endif // OPENCL
 
 typedef layer convolutional_layer;
 
@@ -30,9 +30,24 @@ void cudnn_convolutional_setup(layer *l);
 #endif
 #endif
 
-#ifdef _OCL
+#ifdef OPENCL
 void forward_convolutional_layer_ocl(convolutional_layer layer, network net);
-#endif
+
+#ifdef HALF_MODE
+void conv_ocl_half(convolutional_layer l, network net, cl_mem *mo_in, cl_mem *mo_out, int vec_size);
+#endif // HALF_MODE
+
+#ifdef SHORT_MODE
+void conv_ocl_short(convolutional_layer l, network net, cl_mem *mo_in, cl_mem *mo_out, int vec_size, int index);
+#endif // SHORT_MODE
+
+#ifdef FIXED_MODE
+void conv_ocl_fixed(convolutional_layer l, network net, cl_mem *mo_in, cl_mem *mo_out, int vec_size);
+#endif // FIXED_MODE
+
+void conv_ocl_float(convolutional_layer l, network net, cl_mem *mo_in, cl_mem *mo_out, int vec_size);
+
+#endif // OPENCL
 
 convolutional_layer make_convolutional_layer(int batch, int h, int w, int c, int n, int groups, int size, int stride, int padding, ACTIVATION activation, int batch_normalize, int binary, int xnor, int adam);
 void resize_convolutional_layer(convolutional_layer *layer, int w, int h);
@@ -55,5 +70,4 @@ image get_convolutional_weight(convolutional_layer layer, int i);
 int convolutional_out_height(convolutional_layer layer);
 int convolutional_out_width(convolutional_layer layer);
 
-#endif
-
+#endif // CONVOLUTIONAL_LAYER_H

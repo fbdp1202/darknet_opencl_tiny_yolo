@@ -1,0 +1,88 @@
+memcpy to device Time:	108.000008
+
+layer 0:
+memcpy to device Time:	8.800000
+memcpy to device Time:	5.360000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	1980.080078
+
+layer 1:
+Kernel Time:	4450.800293
+
+layer 2:
+memcpy to device Time:	5.760000
+memcpy to device Time:	5.760000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	4011.760254
+
+layer 3:
+Kernel Time:	2223.200195
+
+layer 4:
+memcpy to device Time:	9.760000
+memcpy to device Time:	5.600000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3817.600098
+
+layer 5:
+Kernel Time:	1110.480103
+
+layer 6:
+memcpy to device Time:	22.880001
+memcpy to device Time:	5.520000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3815.120117
+
+layer 7:
+Kernel Time:	562.480042
+
+layer 8:
+memcpy to device Time:	47.200001
+memcpy to device Time:	5.280000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3665.280273
+
+layer 9:
+Kernel Time:	280.640015
+
+layer 10:
+memcpy to device Time:	0.000000
+memcpy to device Time:	0.000000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3660.000244
+
+layer 11:
+Kernel Time:	81.920006
+
+layer 12:
+memcpy to device Time:	978.000061
+memcpy to device Time:	5.680000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	14277.600586
+
+layer 13:
+memcpy to device Time:	1080.640015
+memcpy to device Time:	5.600000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	14880.880859
+memcpy from device Time:	36.880001
+
+layer 14:
+
+layer 15:

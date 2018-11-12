@@ -1,5 +1,5 @@
 #include "darknet.h"
-#ifdef _OCL
+#ifdef OPENCL
     #include "define_cl.h"
 #endif
 
@@ -543,11 +543,30 @@ void validate_detector_recall(char *cfgfile, char *weightfile)
 void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filename, float thresh, float hier_thresh, char *outfile, int fullscreen)
 {
 
-#ifdef _OCL
+#ifdef OPENCL
     printf("OPENCL ACTIVATED\n");
-    clSetup("./C_block_form_yechan.cl");
+
+#ifdef HALF_MODE
+    printf("HALF_MODE\n");
+    clSetup("./ocl/Kernel_CNN_half.cl");
+#else
+#ifdef SHORT_MODE
+    printf("SHORT_MODE\n");
+    clSetup("./ocl/Kernel_CNN_short.cl");
+#else
+#ifdef FIXED_MODE
+    printf("FIXED_MODE\n");
+    clSetup("./ocl/Kernel_CNN_fixed.cl");
+#else
+    printf("FLOAT_MODE\n");
+    clSetup("./ocl/Kernel_CNN_float.cl");
+#endif // FIXED_MODE
+#endif // SHORT_MODE
+
+#endif // HALF_MODE
+
     clSetupMem();
-#endif
+#endif // OPENCL
 
     list *options = read_data_cfg(datacfg);
     char *name_list = option_find_str(options, "names", "data/names.list");
@@ -559,6 +578,7 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
     srand(2222222);
     double time;
     char buff[256];
+    char buf[256];
     char *input = buff;
     int j;
     float nms=.3;
@@ -590,7 +610,11 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         printf("running test detector\n");
         time=what_time_is_it_now();
         network_predict(net, X);
-        printf("%s: Predicted in %f seconds.\n", input, what_time_is_it_now()-time);
+    
+        printf("%s: Predicted in %f seconds.\n", input, (what_time_is_it_now()-time)/NUM_LOOP );
+        sprintf(buf,"%s: Predicted in %f seconds.\n", input, (what_time_is_it_now()-time)/NUM_LOOP );
+        define_log(buf);
+
         get_region_boxes(l, im.w, im.h, net->w, net->h, thresh, probs, boxes, masks, 0, 0, hier_thresh, 1);
         
         if (nms) do_nms_sort(boxes, probs, l.w*l.h*l.n, l.classes, nms);
@@ -611,6 +635,7 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
 #endif
         }
 
+
         free_image(im);
         free_image(sized);
         free(boxes);
@@ -618,7 +643,9 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         if (filename) break;
     }
 
-#ifdef _OCL
+    free_network(net);
+
+#ifdef OPENCL
     clReleaseMem();
     clReleaseAll();
 #endif

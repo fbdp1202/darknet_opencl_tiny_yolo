@@ -2,7 +2,19 @@ GPU=0
 CUDNN=0
 OPENCV=0
 OPENMP=0
+OPENCL=1
 DEBUG=0
+
+NUM_LOOP=50
+YOCTO:=0
+
+# choice mode
+HALF=0
+SHORT=0
+FIXED=1
+
+# vector size
+VEC=1
 
 ARCH= -gencode arch=compute_30,code=sm_30 \
       -gencode arch=compute_35,code=sm_35 \
@@ -19,23 +31,56 @@ ALIB=libdarknet.a
 EXEC=darknet
 OBJDIR=./obj/
 
+ifeq ($(YOCTO), 0)
 CC=gcc
-#CC=aarch64-poky-linux-gcc -march=armv8-a -mtune=cortex-a57.cortex-a53 --sysroot=/opt/poky/2.1.3/sysroots/aarch64-poky-linux
+endif
+
+ifeq ($(YOCTO), 1)
+CC=aarch64-poky-linux-gcc -march=armv8-a -mtune=cortex-a57.cortex-a53 --sysroot=/opt/poky/2.1.3/sysroots/aarch64-poky-linux
+endif
+
 NVCC=nvcc 
 AR=ar
 ARFLAGS=rcs
 OPTS=-Ofast
-LDFLAGS= -lm -pthread -lOpenCL
+LDFLAGS= -lm -pthread  
 COMMON= -Iinclude/ -Isrc/
 CFLAGS=-Wall -Wno-unknown-pragmas -Wfatal-errors -fPIC
 
+ifeq ($(VEC), 0)
+VEC=1
+endif # VEC
+
+COMMON+= -DVEC=$(VEC) -DNUM_LOOP=$(NUM_LOOP)
+CFLAGS+= -DVEC=$(VEC) -DNUM_LOOP=$(NUM_LOOP)
+
+ifeq ($(HALF), 1)
+COMMON+= -DHALF_MODE
+CFLAGS+= -DHALF_MODE
+endif # HALF
+
+ifeq ($(SHORT), 1)
+COMMON+= -DSHORT_MODE
+CFLAGS+= -DSHORT_MODE
+endif # SHORT
+
+ifeq ($(FIXED), 1)
+COMMON+= -DFIXED_MODE
+CFLAGS+= -DFIXED_MODE
+endif # FIXED
+
+ifeq ($(OPENCL), 1) 
+COMMON+= -DOPENCL
+CFLAGS+= -DOPENCL
+endif # OPENCL
+
 ifeq ($(OPENMP), 1) 
 CFLAGS+= -fopenmp
-endif
+endif # OPENMP
 
 ifeq ($(DEBUG), 1) 
 OPTS=-O0 -g
-endif
+endif # DEBUG
 
 CFLAGS+=$(OPTS)
 
@@ -60,6 +105,12 @@ endif
 
 OBJ=define_cl.o gemm.o utils.o cuda.o deconvolutional_layer.o convolutional_layer.o list.o image.o activations.o im2col.o col2im.o blas.o crop_layer.o dropout_layer.o maxpool_layer.o softmax_layer.o data.o matrix.o network.o connected_layer.o cost_layer.o parser.o option_list.o detection_layer.o route_layer.o box.o normalization_layer.o avgpool_layer.o layer.o local_layer.o shortcut_layer.o activation_layer.o rnn_layer.o gru_layer.o crnn_layer.o demo.o batchnorm_layer.o region_layer.o reorg_layer.o tree.o  lstm_layer.o
 EXECOBJA=captcha.o lsd.o super.o art.o tag.o cifar.o go.o rnn.o segmenter.o regressor.o classifier.o coco.o yolo.o detector.o nightmare.o attention.o darknet.o
+
+ifeq ($(OPENCL), 1)
+LDFLAGS+= -lOpenCL
+OBJ+=network_ocl.o
+endif # OPENCL
+
 ifeq ($(GPU), 1) 
 LDFLAGS+= -lstdc++ 
 OBJ+=convolutional_kernels.o deconvolutional_kernels.o activation_kernels.o im2col_kernels.o col2im_kernels.o blas_kernels.o crop_layer_kernels.o dropout_layer_kernels.o maxpool_layer_kernels.o avgpool_layer_kernels.o
