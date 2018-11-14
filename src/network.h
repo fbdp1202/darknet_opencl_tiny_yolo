@@ -31,10 +31,6 @@ void forward_network_ocl(network *netp);
 void forward_network_ocl_half(network *netp);
 #endif
 
-#ifdef SHORT_MODE
-void forward_network_ocl_short(network *netp);
-#endif
-
 #ifdef FIXED_MODE
 void forward_network_ocl_fixed(network *netp);
 #endif

@@ -412,7 +412,8 @@ struct layer{
 #endif
 
 #ifdef OPENCL
-
+    int ocl_on;
+    void (*forward_ocl)   (struct layer, struct network, cl_mem*, cl_mem*);
 #ifdef HALF_MODE
     cl_half * biases_half;
     cl_half * scales_half;
@@ -420,18 +421,7 @@ struct layer{
     cl_half * rolling_mean_half;
     cl_half * rolling_variance_half;
 #endif
-
-#ifdef SHORT_MODE
-    float wrmax;
-    float wrmin;
-    float wstep;
-
-    int wbitlen;
-
-    unsigned short * weights_short;
-
-#endif
-
+    
 #ifdef FIXED_MODE
     float wrmax;
     float wrmin;

@@ -64,23 +64,16 @@ void weight_reorder(convolutional_layer l){
     int kk = l.size*l.size*l.c / l.groups;
     float *temp = (float*)malloc(sizeof(float)*m*kk);
     int cnt=0;
-    //printf("l weight [0] : %f\n", l.weights[0]);
     for(i = 0; i<l.out_c/8; i++){
-       // printf("i : %d\n", i);
         for(j = 0; j<l.c; j++){
-         //   printf("j : %d\n", j);
             for(k = 0; k<8; k++){
-           //     printf("k : %d\n", k);
                 for(w=0;w<9;w++) 
                     temp[cnt++] = l.weights[9*l.c*8*i + 9*l.c*k + 9*j + w];
             }
         }
     }
-    //printf("cnt : %d, m*k : %d\n", cnt, m*kk);
     for(i = 0; i < m*kk; i++) l.weights[i] = temp[i];
     free(temp);
-    //l.weights_half = temp;
-    //printf("reorder done %f, cnt : %d, m*k : %d\n", poclu_cl_half_to_float(l.weights_half[0]),cnt, m*kk);
 }
 
 #ifdef HALF_MODE
@@ -92,13 +85,9 @@ void weight_reorder_half(convolutional_layer l)
     cl_half *temp = (cl_half*)malloc(sizeof(cl_half)*m*kk);
     printf("allocation done!!!!!!!\n");
     int cnt=0;
-    //printf("l weight [0] : %f\n", l.weights[0]);
     for(i = 0; i<l.out_c/8; i++){
-       // printf("i : %d\n", i);
         for(j = 0; j<l.c; j++){
-         //   printf("j : %d\n", j);
             for(k = 0; k<8; k++){
-           //     printf("k : %d\n", k);
                 for(w=0;w<9;w++) 
                     temp[cnt++] = l.weights_half[9*l.c*8*i + 9*l.c*k + 9*j + w];
             }
@@ -147,11 +136,6 @@ void forward_network_ocl(network *netp)
     return;
 #endif
 
-#ifdef SHORT_MODE
-    forward_network_ocl_short(netp);
-    return;
-#endif
-
 #ifdef FIXED_MODE
     forward_network_ocl_fixed(netp);
     return;
@@ -195,7 +179,6 @@ void forward_network_ocl(network *netp)
             layer l = net.layers[i];
             if(l.delta) fill_cpu(l.outputs * l.batch, 0, l.delta, 1);
 
-            // printf("i : %d, count: %d\n", i, count);
             if (count == 0)         { pmo_in = &mo_img;   pmo_out = &mo_buf_0; }
             else if (count%2 == 0)  { pmo_in = &mo_buf_1; pmo_out = &mo_buf_0; }
             else                { pmo_in = &mo_buf_0; pmo_out = &mo_buf_1; }
@@ -334,7 +317,6 @@ void forward_network_ocl_half(network *netp)
             define_log(buf);
 
             double time=what_time_is_it_now();
-//            printf("layer_%d : ",i);
             switch(i){
                 case 0:
                 case 2:
@@ -361,7 +343,6 @@ void forward_network_ocl_half(network *netp)
             if(i < 14)  gpu_time += what_time_is_it_now()-time;
             else        cpu_time += what_time_is_it_now()-time;
 
-//            printf("layer %d: Predicted in %f seconds.\r\n", i, what_time_is_it_now()-time);
 
             if(i > 12){
                 if(i == 13){
@@ -440,7 +421,6 @@ void forward_network_ocl_fixed(network *netp)
             layer l = net.layers[i];
             if(l.delta) fill_cpu(l.outputs * l.batch, 0, l.delta, 1);
 
-            // printf("i : %d, count: %d\n", i, count);
             if (count == 0)         { pmo_in = &mo_img;   pmo_out = &mo_buf_0; }
             else if (count%2 == 0)  { pmo_in = &mo_buf_1; pmo_out = &mo_buf_0; }
             else                { pmo_in = &mo_buf_0; pmo_out = &mo_buf_1; }
@@ -464,7 +444,6 @@ void forward_network_ocl_fixed(network *netp)
                 case 12:
                 case 13:
                     conv_ocl_fixed(l, net, pmo_in, pmo_out, i);
-                    // conv_ocl_fixed(l, net, pmo_in, pmo_out, VEC);
                     break;
                 case 14:
                     forward_convolutional_layer(l, net);
@@ -478,15 +457,6 @@ void forward_network_ocl_fixed(network *netp)
 
             if(i < 14)  gpu_time += what_time_is_it_now()-time;
             else        cpu_time += what_time_is_it_now()-time;
-
-            // if(c==0 && i == 0){
-            //     int output_size= l.out_w*l.out_h*l.out_c;
-            //     cl_memcpy_from_device(l.output, mo_buf_0, sizeof(float) * output_size);
-            //     int id;
-            //     for(id=0; id<10; id++)
-            //         printf("l.output[%d]: %.6f\n", id*100, l.output[id*100]);
-
-            // }
 
             if(i > 12){
                 if(i == 13){

@@ -105,14 +105,9 @@ void free_layer(layer l)
     if(l.rolling_variance_half)   free(l.rolling_variance_half);
 #endif
 
-#ifdef SHORT_MODE
-    if(l.weights_short)            free(l.weights_short);
-#endif
-
 #ifdef FIXED_MODE
     if(l.weights_fixed)             free(l.weights_fixed);
     if(l.fixed_config)              free(l.fixed_config);
-
 #endif
 
 #endif

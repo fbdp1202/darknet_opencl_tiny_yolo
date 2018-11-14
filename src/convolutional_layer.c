@@ -208,26 +208,7 @@ convolutional_layer make_convolutional_layer(int batch, int h, int w, int c, int
     l.nweights = c/groups*n*size*size;
     l.nbiases = n;
 
-#ifdef HALF_MODE
-    l.weights_half = calloc(c/groups*n*size*size, sizeof(cl_half));
-    l.biases_half = calloc(n, sizeof(cl_half));
-#endif
-
-#ifdef SHORT_MODE
-    l.wbitlen = 16;
-    l.weights_short = calloc(c/groups*n*size*size, sizeof(unsigned short));
-#endif
-
-#ifdef FIXED_MODE
-    l.wbitlen = 8;
-    l.weights_fixed = calloc(c/groups*n*size*size, sizeof(unsigned char));
-    l.fixed_config  = calloc(2, sizeof(float));
-    // l.weights_fixed = calloc(c/groups*n*size*size, sizeof(unsigned char));
-#endif
-    // float scale = 1./sqrt(size*size*c);
     float scale = sqrt(2./(size*size*c/l.groups));
-    //scale = .02;
-    //for(i = 0; i < c*n*size*size; ++i) l.weights[i] = scale*rand_uniform(-1, 1);
     for(i = 0; i < l.nweights; ++i) l.weights[i] = scale*rand_normal();
     int out_w = convolutional_out_width(l);
     int out_h = convolutional_out_height(l);
@@ -270,17 +251,6 @@ convolutional_layer make_convolutional_layer(int batch, int h, int w, int c, int
         l.rolling_variance = calloc(n, sizeof(float));
         l.x = calloc(l.batch*l.outputs, sizeof(float));
         l.x_norm = calloc(l.batch*l.outputs, sizeof(float));
-
-#ifdef HALF_MODE
-        l.scales_half = calloc(n, sizeof(cl_half));
-        l.rolling_mean_half = calloc(n, sizeof(cl_half));
-        l.rolling_variance_half = calloc(n, sizeof(cl_half));
-#endif
-#ifdef SHORT_MODE
-        l.scales_short = calloc(n, sizeof(short));
-        l.rolling_mean_short = calloc(n, sizeof(short));
-        l.rolling_variance_short = calloc(n, sizeof(short));
-#endif
     }
     if(adam){
         l.m = calloc(l.nweights, sizeof(float));
@@ -290,6 +260,26 @@ convolutional_layer make_convolutional_layer(int batch, int h, int w, int c, int
         l.bias_v = calloc(n, sizeof(float));
         l.scale_v = calloc(n, sizeof(float));
     }
+
+#ifdef OPENCL
+
+#ifdef HALF_MODE
+    l.weights_half = calloc(c/groups*n*size*size, sizeof(cl_half));
+    l.biases_half = calloc(n, sizeof(cl_half));
+    if(batch_normalize){
+        l.scales_half = calloc(n, sizeof(cl_half));
+        l.rolling_mean_half = calloc(n, sizeof(cl_half));
+        l.rolling_variance_half = calloc(n, sizeof(cl_half));
+    }
+#endif // HALF_MODE
+
+#ifdef FIXED_MODE
+    l.wbitlen = 8;
+    l.weights_fixed = calloc(c/groups*n*size*size, sizeof(unsigned char));
+    l.fixed_config  = calloc(2, sizeof(float));
+#endif // FIXED_MODE
+
+#endif // OPENCL
 
 #ifdef GPU
     l.forward_gpu = forward_convolutional_layer_gpu;
@@ -706,60 +696,6 @@ void conv_ocl_half(convolutional_layer l, network net, cl_mem *mo_in, cl_mem *mo
     clFreeMemobj(mo_filt);
     clFreeMemobj(mo_biases);
 }
-#endif
-
-#ifdef SHORT_MODE
-
-void conv_ocl_short(convolutional_layer l, network net, cl_mem *mo_in, cl_mem *mo_out, int vec_size, int index)
-{
-    int m = l.n / l.groups;
-    int k = l.size*l.size*l.c / l.groups;
-    cl_kernel krnl_to_execute = clGetkrnl_conv3();
-
-    /////////////
-    if(index == 0)
-        krnl_to_execute = clGetkrnl_in_conv3();
-
-    size_t global[3] = { l.out_w, l.out_h, (int)(l.out_c/LOCAL_DEPTH) };
-    size_t local[3] = { 13, 13, 1 };
-    
-    double time = what_time_is_it_now();
-
-    cl_mem mo_filt = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(unsigned short) * m * k, NULL);
-
-    cl_mem mo_mean = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL);
-    cl_mem mo_variance = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL);
-    cl_mem mo_scales = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL);
-    cl_mem mo_biases = clCreateMemobj(CL_MEM_READ_ONLY, sizeof(float) * m, NULL);
-
-    cl_memcpy_to_device(mo_filt, l.weights_short, sizeof(unsigned short) * m * k);
-
-    cl_memcpy_to_device(mo_biases, l.biases, sizeof(float) * m);
-    cl_memcpy_to_device(mo_mean, l.rolling_mean, sizeof(float) * m);
-    cl_memcpy_to_device(mo_variance, l.rolling_variance, sizeof(float) * m);
-    cl_memcpy_to_device(mo_scales, l.scales, sizeof(float) * m);
-
-    clSetKernelArg(krnl_to_execute, 0, sizeof(cl_mem), mo_in);
-    clSetKernelArg(krnl_to_execute, 1, sizeof(cl_mem), &mo_filt);
-    clSetKernelArg(krnl_to_execute, 2, sizeof(cl_mem), mo_out);
-    clSetKernelArg(krnl_to_execute, 3, sizeof(int), &l.w);
-    clSetKernelArg(krnl_to_execute, 4, sizeof(int), &l.h);
-    clSetKernelArg(krnl_to_execute, 5, sizeof(int), &l.c);
-    clSetKernelArg(krnl_to_execute, 6, sizeof(int), &l.out_c);
-    clSetKernelArg(krnl_to_execute, 7, sizeof(cl_mem), &mo_mean);
-    clSetKernelArg(krnl_to_execute, 8, sizeof(cl_mem), &mo_variance);
-    clSetKernelArg(krnl_to_execute, 9, sizeof(cl_mem), &mo_scales);
-    clSetKernelArg(krnl_to_execute, 10, sizeof(cl_mem), &mo_biases);
-
-    cl_run_kernel3d(krnl_to_execute, global, local, 3);
-
-    clFreeMemobj(mo_filt);
-    clFreeMemobj(mo_mean);
-    clFreeMemobj(mo_variance);
-    clFreeMemobj(mo_scales);
-    clFreeMemobj(mo_biases);
-}
-
 #endif
 
 #ifdef FIXED_MODE

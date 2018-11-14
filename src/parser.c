@@ -1042,53 +1042,7 @@ void load_convolutional_weights_binary(layer l, FILE *fp)
 
 #ifdef OPENCL
 
-#ifdef SHORT_MODE
-
-int conversion(float x, float step)
-{
-    if(x < 0)
-        return (x-step/2)/step;
-    else
-        return (x+step/2)/step;
-}
-
-void do_conv_layer_f_to_s(layer l)
-{
-    int num = l.nweights;
-    int i;
-    if(num){
-        // Search Max and Min
-        float wrmax = l.weights[0];
-        float wrmin = l.weights[0];
-        for(i=0; i < num; i++){
-            float tmp = l.weights[i];
-            if(wrmax < tmp)
-                wrmax = tmp;
-            if(wrmin > tmp)
-                wrmin = tmp;
-        }
-        l.wrmax = wrmax;
-        l.wrmin = wrmin;
-
-        l.wstep = (l.wrmax - l.wrmin)/MAX_SHORT;
-        l.wzeropoint = conversion(-wrmin, l.wstep);
-
-        // convert float to short
-        for(i=0; i < num; i++)
-        {
-            int tmp = conversion(l.weights[i], l.wstep) + l.wzeropoint;
-            if(tmp < 0)
-                tmp = 0;
-            else if(tmp > MAX_SHORT)
-                tmp = MAX_SHORT;
-            l.weights_short[i] = (unsigned short)(tmp);
-        }
-    }
-}
-#endif
-
 #ifdef FIXED_MODE
-
 float conversion(float x, float step)
 {
     if(x < 0)
@@ -1202,24 +1156,15 @@ void load_convolutional_weights(layer l, FILE *fp, int index)
             do_conversion_f_to_h(l.rolling_variance_half, l.rolling_variance, l.n );
         }
     }
-#endif
-
-#ifdef SHORT_MODE
-    if(index < 14){
-        do_conv_layer_f_to_s(l);
-       // display_value_range(l.weights, num, index);
-    }
-    // calculate_noise(l.weights, num);
-#endif
+#endif // HALF_MODE
 
 #ifdef FIXED_MODE
     if(index < 14){
         do_conv_layer_float_to_fixed(l);
-       // display_value_range(l.weights, num, index);
     }
-#endif
+#endif // FIXED_MODE
 
-#endif
+#endif // OPENCL
 
 #ifdef GPU
     if(gpu_index >= 0){

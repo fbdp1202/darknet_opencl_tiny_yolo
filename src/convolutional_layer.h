@@ -37,10 +37,6 @@ void forward_convolutional_layer_ocl(convolutional_layer layer, network net);
 void conv_ocl_half(convolutional_layer l, network net, cl_mem *mo_in, cl_mem *mo_out, int vec_size);
 #endif // HALF_MODE
 
-#ifdef SHORT_MODE
-void conv_ocl_short(convolutional_layer l, network net, cl_mem *mo_in, cl_mem *mo_out, int vec_size, int index);
-#endif // SHORT_MODE
-
 #ifdef FIXED_MODE
 void conv_ocl_fixed(convolutional_layer l, network net, cl_mem *mo_in, cl_mem *mo_out, int vec_size);
 #endif // FIXED_MODE

@@ -539,7 +539,7 @@ void clSetup(const char *krnl_file) {
 	}	
 #endif
 
-#if (!(defined(SHORT_MODE) && defined(HALF_MODE)))
+#if (!defined(HALF_MODE))
 	krnl_in_conv3 = clCreateKernel(program, "in_Conv3", &err);
 	if (err != CL_SUCCESS) {
 		printf("Error: Failed to create kernel for conv3: %s\n", clGetErrorString(err));

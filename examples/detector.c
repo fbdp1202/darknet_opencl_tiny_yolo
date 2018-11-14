@@ -545,27 +545,18 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
 
 #ifdef OPENCL
     printf("OPENCL ACTIVATED\n");
-
-#ifdef HALF_MODE
+ #ifdef HALF_MODE
     printf("HALF_MODE\n");
     clSetup("./ocl/Kernel_CNN_half.cl");
-#else
-#ifdef SHORT_MODE
-    printf("SHORT_MODE\n");
-    clSetup("./ocl/Kernel_CNN_short.cl");
-#else
-#ifdef FIXED_MODE
+  #else
+   #ifdef FIXED_MODE
     printf("FIXED_MODE\n");
     clSetup("./ocl/Kernel_CNN_fixed.cl");
-#else
+   #else
     printf("FLOAT_MODE\n");
     clSetup("./ocl/Kernel_CNN_float.cl");
-#endif // FIXED_MODE
-#endif // SHORT_MODE
-
-#endif // HALF_MODE
-
-    clSetupMem();
+  #endif // FIXED_MODE
+ #endif // HALF_MODE
 #endif // OPENCL
 
     list *options = read_data_cfg(datacfg);
