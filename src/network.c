@@ -195,6 +195,9 @@ void forward_network(network *netp)
 #endif
 
 #ifdef OPENCL
+/**
+  * @brief:    Forward network using GPU and OpenCL
+  */
     forward_network_ocl(netp);
     return;
 #endif

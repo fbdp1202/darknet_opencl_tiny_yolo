@@ -1,54 +1,54 @@
 
 layer 0:
-Kernel Time:	2367.600098
+Kernel Time:	2682.000244
 
 layer 1:
-Kernel Time:	4593.120117
+Kernel Time:	4777.200195
 
 layer 2:
-Kernel Time:	4750.960449
+Kernel Time:	5181.040039
 
 layer 3:
-Kernel Time:	2270.800049
+Kernel Time:	2798.800049
 
 layer 4:
-Kernel Time:	4421.920410
+Kernel Time:	5379.760254
 
 layer 5:
-Kernel Time:	1152.560059
+Kernel Time:	1490.320068
 
 layer 6:
-Kernel Time:	4235.120117
+Kernel Time:	4549.680176
 
 layer 7:
-Kernel Time:	569.920044
+Kernel Time:	558.480042
 
 layer 8:
-Kernel Time:	4194.304199
+Kernel Time:	4718.592285
 
 layer 9:
-Kernel Time:	327.040009
+Kernel Time:	299.120026
 
 layer 10:
-Kernel Time:	4194.304199
+Kernel Time:	4764.800293
 
 layer 11:
-Kernel Time:	81.600006
+Kernel Time:	85.120003
 
 layer 12:
-Kernel Time:	15728.640625
+Kernel Time:	15508.161133
 
 layer 13:
-Kernel Time:	16419.839844
-memcpy from device Time:	106.880005
+Kernel Time:	16091.520508
+memcpy from device Time:	88.400002
 
 layer 14:
 
 layer 15:
 
 Number of Class is : 50
-GPU time 3.332855 seconds.
-CPU time 0.739708 seconds.
-Each GPU time 0.066657 seconds.
-data/person.jpg: Predicted in 0.084845 seconds.
+GPU time 3.372753 seconds.
+CPU time 0.625674 seconds.
+Each GPU time 0.067455 seconds.
+data/person.jpg: Predicted in 0.083324 seconds.
 

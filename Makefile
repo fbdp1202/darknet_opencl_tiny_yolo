@@ -103,7 +103,7 @@ EXECOBJA=captcha.o lsd.o super.o art.o tag.o cifar.o go.o rnn.o segmenter.o regr
 
 ifeq ($(OPENCL), 1)
 LDFLAGS+= -lOpenCL
-OBJ+=network_ocl.o
+OBJ+=network_ocl.o convolutional_layer_ocl.o
 endif # OPENCL
 
 ifeq ($(GPU), 1) 

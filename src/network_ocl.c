@@ -1,3 +1,13 @@
+/**
+  * @file       newtork_ocl.c
+  * @author     Yechan, Jinju
+  * @brief      It is a file that collects modules          \n
+                for forward network with OpenCL and GPU.    \n
+                This file is divided into 'float', 'half'   \n
+                and 'fixed' versions, and the functions     \n
+                are separated.                              \n
+**/
+
 #ifdef OPENCL 
 
 #include <stdio.h>
@@ -58,6 +68,15 @@ int find_max_out_size(network *netp)
     return sz_out;
 }
 
+/**
+  * @file       newtork_ocl.c
+  * @author     Jinju
+  * @param      Convolational_layer l
+                It is a strcuture containing the information of             \n 
+                the convolutional layer.                                    \n
+  * @brief      In order to efficiently use the vectorization provided      \n
+  *             by OpenCL, rearrange the order of access of the weights.    \n
+**/
 void weight_reorder(convolutional_layer l){
     int i, j, k, w;
     int m = l.n / l.groups;
@@ -99,6 +118,20 @@ void weight_reorder_half(convolutional_layer l)
 }
 #endif // HALF_MODE
 
+/**
+  * @file       newtork_ocl.c
+  * @author     Jinju
+  * @param      network *netp   Contains network information
+  * @param      int img_size    Input image size
+  * @param      int uchar_im    When storing an image in an OpenCL          \n
+                                memory object, determine the type of data.  \n
+                                If this value is 0, it is generated as      \n 
+                                'float' type. If it is 1, it is created as  \n 
+                                'unsigned char'.
+  * @return     cl_mem A memory object containing an image
+  * @brief      Changed the input picture to OpenCL memory object form.     \n
+                Memory object type is set by uchar_im flag value.
+**/
 cl_mem create_mo_img(network *netp, int img_size, int uchar_im)
 {
     int i;
@@ -128,6 +161,30 @@ cl_mem create_mo_img(network *netp, int img_size, int uchar_im)
     return mo_img;
 }
 
+void swap_cl_mem(cl_mem *pmo_in, cl_mem *pmo_out, cl_mem *pmo_img, cl_mem *pmo_buf_0, cl_mem *pmo_buf_1, int count)
+{
+    if (count == 0)         { pmo_in = pmo_img;      pmo_out = pmo_buf_0; }
+    else if (count%2 == 0)  { pmo_in = pmo_buf_1;   pmo_out = pmo_buf_0; }
+    else                    { pmo_in = pmo_buf_0;   pmo_out = pmo_buf_1; }
+}
+
+/**
+  * @file       newtork_ocl.c
+  * @author     Jinju
+  * @param      network *netp   Contains network information
+  * @param      int img_size    Input image size
+  * @param      int uchar_im    When storing an image in an OpenCL          \n
+                                memory object, determine the type of data.  \n
+                                If this value is 0, it is generated as      \n 
+                                'float' type. If it is 1, it is created as  \n 
+                                'unsigned char'.
+  * @return     cl_mem A memory object containing an image
+  * @brief      The OpenCL version of the forward network. Depending on     \n
+                the data type of the weight, it is divided into 'half',     \n
+                'fixed' and 'float'. This can be adjusted with the HALF and \n
+                FIXED variables in the Makefile. In both cases,             \n
+                it works as 'float'.
+**/
 void forward_network_ocl(network *netp)
 {
 
@@ -162,6 +219,8 @@ void forward_network_ocl(network *netp)
     mo_buf_0 = clCreateMemobj(CL_MEM_READ_WRITE, sizeof(float) * sz_out, NULL);
     mo_buf_1 = clCreateMemobj(CL_MEM_READ_WRITE, sizeof(float) * sz_out, NULL);
 
+//  If the value of VEC is greater than 1, vectorization occurs in the kernel.
+//  At this time, VEC represents the length of the vector data.
     if(VEC > 1){
         weight_reorder(net.layers[12]);
         weight_reorder(net.layers[13]);
@@ -178,12 +237,10 @@ void forward_network_ocl(network *netp)
             net.index = i;
             layer l = net.layers[i];
             if(l.delta) fill_cpu(l.outputs * l.batch, 0, l.delta, 1);
+            
+            swap_cl_mem(pmo_in, pmo_out, &mo_img, &mo_buf_0, &mo_buf_1, count);
 
-            if (count == 0)         { pmo_in = &mo_img;   pmo_out = &mo_buf_0; }
-            else if (count%2 == 0)  { pmo_in = &mo_buf_1; pmo_out = &mo_buf_0; }
-            else                { pmo_in = &mo_buf_0; pmo_out = &mo_buf_1; }
-
-            if(c==0){
+            if(c == 0){
                 sprintf(buf, "\nlayer %d:", i);
                 define_log(buf);
             }
@@ -229,6 +286,7 @@ void forward_network_ocl(network *netp)
             else        cpu_time += what_time_is_it_now()-time;
 
             if(i > 12){
+                //  When the task is finished on the GPU, copy the result to the CPU.
                 if(i == 13){
                     int output_size= l.out_w*l.out_h*l.out_c;
                     cl_memcpy_from_device(l.output, *pmo_out, sizeof(float) * output_size);
