@@ -93,32 +93,6 @@ void conv_ocl_fixed(convolutional_layer l, network net, cl_mem *mo_in, cl_mem *m
     size_t global[3] = { l.out_w, l.out_h, (int)(l.out_c/LOCAL_DEPTH) };
     size_t local[3] = { 13, 13, 1 };
 
-    
-    // if(vec_size == -2){
-    //     krnl_to_execute = clGetkrnl_in_conv3();
-    // }
-    // if(vec_size == -3){
-    //     krnl_to_execute = clGetkrnl_in_ConvMax();
-    //     local[0] = 16;
-    //     local[1] = 16;
-    // }
-    // if(vec_size == -4){
-    //     krnl_to_execute = clGetkrnl_Second_ConvMax();
-    //     local[0] = 8;
-    //     local[1] = 8;
-    // }
-
-    // if(l.w == 13)
-    //     krnl_to_execute = clGetkrnl_in_conv3_13x13();
-
-    // if(net.index > 11){
-    //     if(vec_size == 2) krnl_to_execute = clGetkrnl_conv3_vec();
-    //     else if(vec_size == 4) krnl_to_execute = clGetkrnl_conv3_vec4();
-    //     else if(vec_size == 8) krnl_to_execute = clGetkrnl_conv3_vec8();
-    //     //krnl_to_execute = clGetkrnl_conv3_vec();
-    // }
-
-    /////////////
     clSetKernelArg(krnl_to_execute, 0, sizeof(cl_mem), mo_in);
     clSetKernelArg(krnl_to_execute, 1, sizeof(cl_mem), clGet_mo_filt_Mem(idx));
     clSetKernelArg(krnl_to_execute, 2, sizeof(cl_mem), mo_out);    

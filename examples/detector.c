@@ -603,7 +603,7 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         network_predict(net, X);
     
         printf("%s: Predicted in %f seconds.\n", input, (what_time_is_it_now()-time)/NUM_LOOP );
-        sprintf(buf,"%s: Predicted in %f seconds.\n", input, (what_time_is_it_now()-time)/NUM_LOOP );
+        sprintf(buf,"%s: Predicted in %f seconds.\n", input, (what_time_is_it_now()-time)/NUM_LOOP);
         define_log(buf);
 
         get_region_boxes(l, im.w, im.h, net->w, net->h, thresh, probs, boxes, masks, 0, 0, hier_thresh, 1);

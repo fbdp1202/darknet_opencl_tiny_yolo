@@ -1,6 +1,8 @@
-/**
+/** @HGUYK
   * @file       newtork_ocl.c
+  * @date       2018/12/03
   * @author     Yechan, Jinju
+  * @email      21500429@handon.edu, 21000770@handong.edu
   * @brief      It is a file that collects modules          \n
                 for forward network with OpenCL and GPU.    \n
                 This file is divided into 'float', 'half'   \n
@@ -68,9 +70,10 @@ int find_max_out_size(network *netp)
     return sz_out;
 }
 
-/**
+/** @HGUYK
   * @file       newtork_ocl.c
   * @author     Jinju
+  * @date       20178/12/03
   * @param      Convolational_layer l
                 It is a strcuture containing the information of             \n 
                 the convolutional layer.                                    \n
@@ -118,9 +121,10 @@ void weight_reorder_half(convolutional_layer l)
 }
 #endif // HALF_MODE
 
-/**
+/** @HGUYK
   * @file       newtork_ocl.c
   * @author     Jinju
+  * @date       2018/12/03
   * @param      network *netp   Contains network information
   * @param      int img_size    Input image size
   * @param      int uchar_im    When storing an image in an OpenCL          \n
@@ -161,29 +165,15 @@ cl_mem create_mo_img(network *netp, int img_size, int uchar_im)
     return mo_img;
 }
 
-void swap_cl_mem(cl_mem *pmo_in, cl_mem *pmo_out, cl_mem *pmo_img, cl_mem *pmo_buf_0, cl_mem *pmo_buf_1, int count)
-{
-    if (count == 0)         { pmo_in = pmo_img;      pmo_out = pmo_buf_0; }
-    else if (count%2 == 0)  { pmo_in = pmo_buf_1;   pmo_out = pmo_buf_0; }
-    else                    { pmo_in = pmo_buf_0;   pmo_out = pmo_buf_1; }
-}
-
-/**
+/** @HGUYK
   * @file       newtork_ocl.c
   * @author     Jinju
+  * @date       2018/12/03
   * @param      network *netp   Contains network information
-  * @param      int img_size    Input image size
-  * @param      int uchar_im    When storing an image in an OpenCL          \n
-                                memory object, determine the type of data.  \n
-                                If this value is 0, it is generated as      \n 
-                                'float' type. If it is 1, it is created as  \n 
-                                'unsigned char'.
-  * @return     cl_mem A memory object containing an image
-  * @brief      The OpenCL version of the forward network. Depending on     \n
-                the data type of the weight, it is divided into 'half',     \n
-                'fixed' and 'float'. This can be adjusted with the HALF and \n
-                FIXED variables in the Makefile. In both cases,             \n
-                it works as 'float'.
+  * @brief      It works in three modes: Float, Half and Fixed.             \n
+  *             This mode setting can be changed using Flag in MakeFile.
+  * @brief      In Addtion to the Makfile, there are three Configs          \n
+  *             in the function: "conv_max0", "conv_max2" and "uchar_im"
 **/
 void forward_network_ocl(network *netp)
 {
@@ -207,7 +197,7 @@ void forward_network_ocl(network *netp)
 // config
     int convmax_0 = 0;
     int convmax_2 = 0;
-    int uchar_im = 1;
+    int uchar_im = 0;
 
     cl_mem mo_img, mo_buf_0, mo_buf_1;
     cl_mem *pmo_in, *pmo_out, *tmp;
@@ -238,7 +228,9 @@ void forward_network_ocl(network *netp)
             layer l = net.layers[i];
             if(l.delta) fill_cpu(l.outputs * l.batch, 0, l.delta, 1);
             
-            swap_cl_mem(pmo_in, pmo_out, &mo_img, &mo_buf_0, &mo_buf_1, count);
+            if (i == 0)         { pmo_in = &mo_img;   pmo_out = &mo_buf_0; }
+            else if (i%2 == 0)  { pmo_in = &mo_buf_1; pmo_out = &mo_buf_0; }
+            else                { pmo_in = &mo_buf_0; pmo_out = &mo_buf_1; }
 
             if(c == 0){
                 sprintf(buf, "\nlayer %d:", i);
@@ -325,6 +317,16 @@ void forward_network_ocl(network *netp)
     calc_network_cost(netp);
 }
 
+/** @HGUYK
+  * @file       newtork_ocl.c
+  * @author     Jinju
+  * @date       2018/12/03
+  * @brief      It's forward network function using the "Half" data type.
+  *             The "Half" data type is a 2-byte floating point type.
+  * @brief      Half type is applicable for vectorization. The length of this Vector
+  *             is determined by the value of the "VEC" variable in the Makefile. 
+  *             VEC values are 2, 4, 8, and 16 are supported.
+**/
 #ifdef HALF_MODE
 void forward_network_ocl_half(network *netp)
 {
@@ -430,6 +432,14 @@ void forward_network_ocl_half(network *netp)
 }
 #endif
 
+
+/** @HGUYK
+  * @file       newtork_ocl.c
+  * @author     yechan
+  * @date       2018/12/03
+  * @brief      Fixed point type changed the weight value to 8bit unsigned char 
+  *             to reduce data transfer time.
+**/
 #ifdef FIXED_MODE
 void forward_network_ocl_fixed(network *netp)
 {
@@ -460,11 +470,6 @@ void forward_network_ocl_fixed(network *netp)
         if(l.weights_fixed){
             clSetupWmem(i, m, k, l.weights_fixed, l.biases, l.rolling_mean, l.rolling_variance, l.scales);
         }
-    }
-
-    if(VEC > 1){
-        weight_reorder(net.layers[12]);
-        weight_reorder(net.layers[13]);
     }
 
     int count = 0;

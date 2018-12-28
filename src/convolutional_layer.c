@@ -257,7 +257,12 @@ convolutional_layer make_convolutional_layer(int batch, int h, int w, int c, int
     }
 
 #ifdef OPENCL
-
+/** @HGUYK
+  * @file       newtork_ocl.c
+  * @author     yechan
+  * @date       2018/12/03
+  * @brief      Allocate For saving weight value to Half type
+**/
 #ifdef HALF_MODE
     l.weights_half = calloc(c/groups*n*size*size, sizeof(cl_half));
     l.biases_half = calloc(n, sizeof(cl_half));
@@ -268,6 +273,12 @@ convolutional_layer make_convolutional_layer(int batch, int h, int w, int c, int
     }
 #endif // HALF_MODE
 
+/** @HGUYK
+  * @file       newtork_ocl.c
+  * @author     yechan
+  * @date       2018/12/03
+  * @brief      Allocate For saving weight value to Fixed type
+**/
 #ifdef FIXED_MODE
     l.wbitlen = 8;
     l.weights_fixed = calloc(c/groups*n*size*size, sizeof(unsigned char));

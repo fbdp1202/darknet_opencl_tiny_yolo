@@ -12,7 +12,6 @@ cl_kernel krnl_in_conv3 = NULL;
 cl_kernel krnl_in_ConvMax = NULL;
 cl_kernel krnl_Second_ConvMax = NULL;
 
-cl_kernel krnl_conv3_14x14 = NULL;
 cl_kernel krnl_in_conv3_13x13 = NULL;
 
 cl_kernel krnl_conv3_vec = NULL;
@@ -31,6 +30,14 @@ cl_mem mo_mean_0, mo_mean_2, mo_mean_4, mo_mean_6, mo_mean_8, mo_mean_10, mo_mea
 cl_mem mo_variance_0, mo_variance_2, mo_variance_4, mo_variance_6, mo_variance_8, mo_variance_10, mo_variance_12, mo_variance_13;
 cl_mem mo_scales_0, mo_scales_2, mo_scales_4, mo_scales_6, mo_scales_8, mo_scales_10, mo_scales_12, mo_scales_13;
 
+/**
+  *@function clSetupWmem
+  *@param int m, k
+  *@param unsigned char mo_filt
+  *@param float biases, mean, variance, scales
+  *@return void
+  *@brief create memory object and copy memory to device
+  */
 void clSetupWmem(int idx, int m, int k, unsigned char *mo_filt, float *biases, 
 				float *mean, float *variance, float *scales)
 {
@@ -168,6 +175,12 @@ void clSetupWmem(int idx, int m, int k, unsigned char *mo_filt, float *biases,
 	}
 }
 
+/**
+  *@function clReleaseWmem
+  *@param void
+  *@return void
+  *@brief release memory object of filters
+  */
 void clReleaseWmem(){
 	clFreeMemobj(mo_filt_0);
 	clFreeMemobj(mo_filt_2);
@@ -179,6 +192,12 @@ void clReleaseWmem(){
 	clFreeMemobj(mo_filt_13);
 }
 
+/**
+  *@function clGet_mo_filt_Mem
+  *@param int i
+  *@return cl_mem mo_filt
+  *@brief 
+  */
 cl_mem* clGet_mo_filt_Mem(int i){
 	switch(i){
 		case 0:	 return &mo_filt_0;
@@ -193,6 +212,12 @@ cl_mem* clGet_mo_filt_Mem(int i){
 	return NULL;
 }
 
+/**
+  *@function clGet_mo_biases_Mem
+  *@param int i
+  *@return cl_mem mo_biases
+  *@brief 
+  */
 cl_mem* clGet_mo_biases_Mem(int i){
 	switch(i){
 		case 0:	 return &mo_biases_0;
@@ -207,6 +232,12 @@ cl_mem* clGet_mo_biases_Mem(int i){
 	return NULL;
 }
 
+/**
+  *@function clGet_mo_mean_Mem
+  *@param int i
+  *@return cl_mem mo_mean
+  *@brief 
+  */
 cl_mem* clGet_mo_mean_Mem(int i){
 	switch(i){
 		case 0:	 return &mo_mean_0;
@@ -221,6 +252,12 @@ cl_mem* clGet_mo_mean_Mem(int i){
 	return NULL;
 }
 
+/**
+  *@function clGet_mo_variance_Mem
+  *@param int i
+  *@return cl_mem mo_variance
+  *@brief 
+  */
 cl_mem* clGet_mo_variance_Mem(int i){
 	switch(i){
 		case 0:	 return &mo_variance_0;
@@ -235,6 +272,12 @@ cl_mem* clGet_mo_variance_Mem(int i){
 	return NULL;
 }
 
+/**
+  *@function clGet_mo_scales_Mem
+  *@param int i
+  *@return cl_mem mo_scales
+  *@brief 
+  */
 cl_mem* clGet_mo_scales_Mem(int i){
 	switch(i){
 		case 0:	 return &mo_scales_0;
@@ -284,8 +327,6 @@ cl_kernel clGetkrnl_in_conv3() { return krnl_in_conv3; }
 cl_kernel clGetkrnl_in_ConvMax() { return krnl_in_ConvMax; }
 cl_kernel clGetkrnl_Second_ConvMax() { return krnl_Second_ConvMax; }
 
-
-cl_kernel clGetkrnl_conv3_14x14() { return krnl_conv3_14x14; }
 cl_kernel clGetkrnl_in_conv3_13x13() { return krnl_in_conv3_13x13; }
 
 cl_kernel clGetkrnl_conv3_vec() {return krnl_conv3_vec; }
@@ -298,6 +339,13 @@ cl_kernel clGetkrnl_pool2() { return krnl_pool2; }
 
 FILE *fp;
 
+/**
+  *@function Device_info
+  *@param cl_platform_id platform
+  *@param cl_device_id device
+  *@return void
+  *@brief shows types and information of gpu platfrom
+  */
 void Deivce_info(cl_platform_id platform, cl_device_id device){
 	cl_int err;
 	cl_char string[10240] = {0};
@@ -361,6 +409,12 @@ void Deivce_info(cl_platform_id platform, cl_device_id device){
 
 }
 
+/**
+  *@function getKernelSource
+  *@param char filename
+  *@return char
+  *@brief get the kernel source file to use (ex. ~.cl)
+  */
 char * getKernelSource(const char *filename)
 {
 	FILE *file = fopen(filename, "r");
@@ -384,6 +438,12 @@ char * getKernelSource(const char *filename)
 	return source;
 }
 
+/**
+  *@function clGet_mo_scales_Mem
+  *@param cl_int err
+  *@return char
+  *@brief show error messages for each case
+  */
 char const* clGetErrorString(cl_int const err) {
 	switch (err)
 	{
@@ -454,6 +514,20 @@ char const* clGetErrorString(cl_int const err) {
 	}
 }
 
+/**
+  *@function clSetup
+  *@param char krnl_file
+  *@return void
+  *@brief setting up the OpenCL condition
+    1. get platformID of system (clGetPlatformIDs)
+    2. choose device to use for platform (clGetDeviceIDs)
+    3. create OpenCL context (clCreateContext)
+    4. create command queue object to control the device (clCreateCommandQueue)
+    5. read the kernel program
+    6. recognize kernel programs as program objects
+    7. compile the kernel
+    8. create kernel object for each
+  */
 void clSetup(const char *krnl_file) {
 	cl_int err;
 	char log[CL_LOG_SIZE] = { 0 };
@@ -531,15 +605,7 @@ void clSetup(const char *krnl_file) {
 		exit(EXIT_FAILURE);
 	}
 
-#ifdef FIXED_MODE
-	krnl_conv3_14x14 = clCreateKernel(program, "Conv3_14x14", &err);
-	if (err != CL_SUCCESS) {
-		printf("Error: Failed to create kernel for Conv3_14x14: %s\n", clGetErrorString(err));
-		exit(EXIT_FAILURE);
-	}	
-#endif
-
-#if (!defined(HALF_MODE))
+#if (!(defined(SHORT_MODE) && defined(HALF_MODE)))
 	krnl_in_conv3 = clCreateKernel(program, "in_Conv3", &err);
 	if (err != CL_SUCCESS) {
 		printf("Error: Failed to create kernel for conv3: %s\n", clGetErrorString(err));
@@ -638,6 +704,12 @@ void clSetup(const char *krnl_file) {
 	fp = fopen("log.txt", "w");
 }
 
+/**
+  *@function clReleaseAll
+  *@param void
+  *@return void
+  *@brief release kernels, programs, commandqueue, context programs for safe termination of the program
+  */
 void clReleaseAll() {
 	clFlush(command_queue);
 	clFinish(command_queue);
@@ -656,6 +728,15 @@ void clReleaseAll() {
 	fclose(fp);
 }
 
+/**
+  *@function clSetKrnlArg
+  *@param cl_kernel krnl
+  *@param cl_uint num
+  *@param size_t size
+  *@param void ptr
+  *@return void
+  *@brief send parameter of kernel to the data
+  */
 void clSetKrnlArg(cl_kernel krnl, cl_uint num, size_t size, void *ptr) {
 	int err = clSetKernelArg(krnl, num, size, ptr);
 
@@ -665,6 +746,14 @@ void clSetKrnlArg(cl_kernel krnl, cl_uint num, size_t size, void *ptr) {
 	}
 }
 
+/**
+  *@function clCreateMemobj
+  *@param cl_mem_flags flags
+  *@param size_t size
+  *@param float host_ptr
+  *@return cl_mem mem 
+  *@brief create memery object to access the device memory
+  */
 cl_mem clCreateMemobj(cl_mem_flags flags, size_t size, float* host_ptr) {
 	int errNum = 0;
 	cl_mem mem = clCreateBuffer(context, flags, size, host_ptr, &errNum);
@@ -677,9 +766,16 @@ cl_mem clCreateMemobj(cl_mem_flags flags, size_t size, float* host_ptr) {
 	return mem;
 }
 
+/**
+  *@function clFreeMemobj
+  *@param cl_mem buffer
+  *@return void
+  *@brief release memory object for safe termination
+  */
 void clFreeMemobj(cl_mem buffer) {
 	clReleaseMemObject(buffer);
 }
+
 
 void cl_memcpy_to_device(cl_mem dest, void* src,
 	size_t size) {

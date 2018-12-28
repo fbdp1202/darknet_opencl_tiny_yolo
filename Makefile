@@ -11,7 +11,7 @@ YOCTO:=0
 # choice mode
 HALF=0
 SHORT=0
-FIXED=1
+FIXED=0
 
 # vector size
 VEC=1

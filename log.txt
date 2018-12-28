@@ -1,54 +1,94 @@
 
 layer 0:
-Kernel Time:	2682.000244
+memcpy to device Time:	9.360001
+memcpy to device Time:	5.760000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	3751.520264
 
 layer 1:
-Kernel Time:	4777.200195
+Kernel Time:	4735.280273
 
 layer 2:
-Kernel Time:	5181.040039
+memcpy to device Time:	6.720000
+memcpy to device Time:	5.520000
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	7672.160156
 
 layer 3:
-Kernel Time:	2798.800049
+Kernel Time:	2409.920166
 
 layer 4:
-Kernel Time:	5379.760254
+memcpy to device Time:	12.800000
+memcpy to device Time:	5.840000
+memcpy to device Time:	5.520000
+memcpy to device Time:	5.520000
+memcpy to device Time:	5.520000
+Kernel Time:	7082.560547
 
 layer 5:
-Kernel Time:	1490.320068
+Kernel Time:	1254.480103
 
 layer 6:
-Kernel Time:	4549.680176
+memcpy to device Time:	25.520000
+memcpy to device Time:	5.280000
+memcpy to device Time:	5.280000
+memcpy to device Time:	5.280000
+memcpy to device Time:	5.200000
+Kernel Time:	6967.840332
 
 layer 7:
-Kernel Time:	558.480042
+Kernel Time:	812.560059
 
 layer 8:
-Kernel Time:	4718.592285
+memcpy to device Time:	65.760002
+memcpy to device Time:	5.600000
+memcpy to device Time:	5.360000
+memcpy to device Time:	5.440000
+memcpy to device Time:	5.440000
+Kernel Time:	6818.640137
 
 layer 9:
-Kernel Time:	299.120026
+Kernel Time:	281.600006
 
 layer 10:
-Kernel Time:	4764.800293
+memcpy to device Time:	492.800018
+memcpy to device Time:	5.680000
+memcpy to device Time:	5.440000
+memcpy to device Time:	5.520000
+memcpy to device Time:	5.520000
+Kernel Time:	6107.280273
 
 layer 11:
-Kernel Time:	85.120003
+Kernel Time:	82.720001
 
 layer 12:
-Kernel Time:	15508.161133
+memcpy to device Time:	1865.840088
+memcpy to device Time:	5.840000
+memcpy to device Time:	5.600000
+memcpy to device Time:	5.520000
+memcpy to device Time:	5.680000
+Kernel Time:	24946.480469
 
 layer 13:
-Kernel Time:	16091.520508
-memcpy from device Time:	88.400002
+memcpy to device Time:	2006.080078
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+memcpy to device Time:	Unknown
+Kernel Time:	25174.560547
+memcpy from device Time:	137.920013
 
 layer 14:
 
 layer 15:
 
 Number of Class is : 50
-GPU time 3.372753 seconds.
-CPU time 0.625674 seconds.
-Each GPU time 0.067455 seconds.
-data/person.jpg: Predicted in 0.083324 seconds.
+GPU time 5.617073 seconds.
+CPU time 0.607164 seconds.
+Each GPU time 0.112341 seconds.
+data/person.jpg: Predicted in 0.127756 seconds.
 

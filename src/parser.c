@@ -1051,6 +1051,13 @@ float conversion(float x, float step)
         return (x+step/2)/step;
 }
 
+/** @HGUYK
+  * @file       parser.c
+  * @author     yechan
+  * @date       2018/12/03
+  * @brief      Convert 4-byte floating point type to 1-byte Unsigned Char type
+  * @brief     
+* */
 void do_conv_layer_float_to_fixed(layer l)
 {
     int num = l.nweights;
@@ -1070,31 +1077,31 @@ void do_conv_layer_float_to_fixed(layer l)
         l.wrmin = wrmin;
 
         l.wstep = (l.wrmax - l.wrmin)/255.f;
-        // l.wzeropoint = conversion(-wrmin, l.wstep);
 
         l.fixed_config[0] = l.wrmin;
         l.fixed_config[1] = l.wstep;
+
         // convert float to short
         for(i=0; i < num; i++)
         {
-            // float tmp = conversion(l.weights[i], l.wstep) + l.wzeropoint;
-            // float tmp = (l.weights[i] - l.wrmin)/l.wstep;
             unsigned char tmp = ((l.weights[i] - l.wrmin)/l.wstep + 0.5);
             if(tmp < 0)
                 tmp = 0;
             else if(tmp > MAX_FIXED)
                 tmp = MAX_FIXED;
+            // reordering Weight Lotation 
+            // origin: l.weights[output Channel][input Channel][filter Size]
+            // After:  l.weights_fixed[input Channel][output Channel][filter Size]
             int idxf = i %(l.size * l.size);
             int ic = (i / (l.size * l.size))%l.c;
             int ioutc = i/(l.size * l.size * l.c);
             l.weights_fixed[idxf + ic*(l.size*l.size*l.out_c) + ioutc*l.size*l.size] = tmp;
-            // l.weights_fixed[i] = tmp;
         }
     }
 }
-#endif
+#endif //FIXED_MODE
 
-#endif
+#endif //OPENCL
 
 void load_convolutional_weights(layer l, FILE *fp, int index)
 {
@@ -1139,12 +1146,17 @@ void load_convolutional_weights(layer l, FILE *fp, int index)
     fread(l.weights, sizeof(float), num, fp);
     //if(l.c == 3) scal_cpu(num, 1./256, l.weights, 1);
     if (l.flipped) {
-        printf("flip!!!\n");
         transpose_matrix(l.weights, l.c*l.size*l.size, l.n);
     }
 
 #ifdef OPENCL
 
+/** @HGUYK
+  * @file       parser.c
+  * @author     yechan
+  * @date       2018/12/03
+  * @brief      Convert 4-byte floating point type to 2-byte half point type
+**/
 #ifdef HALF_MODE
     if(index < 14){
         do_conversion_f_to_h(l.weights_half,          l.weights,          num );
@@ -1158,6 +1170,13 @@ void load_convolutional_weights(layer l, FILE *fp, int index)
     }
 #endif // HALF_MODE
 
+
+/** @HGUYK
+  * @file       parser.c
+  * @author     yechan
+  * @date       2018/12/03
+  * @brief      Convert 4Byte Floating Point type to 1Byte Unsigned Char type
+**/
 #ifdef FIXED_MODE
     if(index < 14){
         do_conv_layer_float_to_fixed(l);
